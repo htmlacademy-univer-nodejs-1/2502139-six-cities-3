@@ -1,0 +1,101 @@
+{
+  "api": {
+    "name": [
+      "Home",
+      "House",
+      "Apartment",
+      "Barrack",
+      "Shelter",
+      "Basement",
+      "Attic"
+    ],
+    "description": [
+      "Spacious 2-bedroom home available for immediate rent. Includes a large kitchen and backyard.",
+      "Charming house in the city center, perfect for families. Close to schools and parks.",
+      "Modern apartment with a great view of the city. Includes a gym and pool access.",
+      "Affordable barrack with basic amenities. Ideal for students or single workers.",
+      "Cozy shelter in a quiet neighborhood. Pets are welcome.",
+      "Basement with private entrance available for rent. Includes utilities and internet.",
+      "Attic room available in a shared house. Perfect for students or young professionals.",
+      "Fully furnished property available for short-term rent. Ideal for vacation or business trips."
+    ],
+    "cities": [
+      "New York",
+      "Los Angeles",
+      "Chicago",
+      "Houston",
+      "Phoenix",
+      "Philadelphia",
+      "San Antonio",
+      "San Diego"
+    ],
+    "previewImages": [
+      "preview-photo-1.jpg",
+      "preview-photo-2.jpg",
+      "preview-photo-3.jpg",
+      "preview-photo-4.jpg",
+      "preview-photo-5.jpg",
+      "preview-photo-6.jpg",
+      "preview-photo-7.jpg",
+      "preview-photo-8.jpg"
+    ],
+    "images": [
+      "photo-1.jpg",
+      "photo-2.jpg",
+      "photo-3.jpg",
+      "photo-4.jpg",
+      "photo-5.jpg",
+      "photo-6.jpg",
+      "photo-7.jpg",
+      "photo-8.jpg"
+    ],
+    "features": [
+      "Air conditioning",
+      "Balcony",
+      "Dishwasher",
+      "Elevator",
+      "Fireplace",
+      "Furnished",
+      "Garage",
+      "Garden"
+    ],
+    "authors": [
+      "John Doe",
+      "Jane Doe",
+      "Alice Smith",
+      "Bob Johnson",
+      "David Brown",
+      "Emily Davis",
+      "Michael Wilson",
+      "Olivia Miller"
+    ],
+    "avatars": [
+      "avatar-1.jpg",
+      "avatar-2.jpg",
+      "avatar-3.jpg",
+      "avatar-4.jpg",
+      "avatar-5.jpg",
+      "avatar-6.jpg",
+      "avatar-7.jpg",
+      "avatar-8.jpg"
+    ],
+    "passwords": [
+      "zxcvbn",
+      "qwe123",
+      "123456",
+      "password",
+      "qwerty",
+      "12345678",
+      "1234567",
+      "1234567890"
+    ],
+    "coordinates": [
+      "48.85661 2.351499",
+      "50.938361 6.959974",
+      "50.846557 4.351697",
+      "52.370216 4.895168",
+      "53.550341 10.000654",
+      "51.225402 6.776314"
+    ]
+  }
+}
