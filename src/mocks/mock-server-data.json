@@ -20,14 +20,12 @@
       "Fully furnished property available for short-term rent. Ideal for vacation or business trips."
     ],
     "cities": [
-      "New York",
-      "Los Angeles",
-      "Chicago",
-      "Houston",
-      "Phoenix",
-      "Philadelphia",
-      "San Antonio",
-      "San Diego"
+      "Paris",
+      "Cologne",
+      "Brussels",
+      "Amsterdam",
+      "Hamburg",
+      "Dusseldorf"
     ],
     "previewImages": [
       "preview-photo-1.jpg",
@@ -51,13 +49,12 @@
     ],
     "features": [
       "Air conditioning",
-      "Balcony",
-      "Dishwasher",
-      "Elevator",
-      "Fireplace",
-      "Furnished",
-      "Garage",
-      "Garden"
+      "Breakfast",
+      "Laptop friendly workspace",
+      "Baby seat",
+      "Washer",
+      "Towels",
+      "Fridge"
     ],
     "authors": [
       "John Doe",
@@ -78,6 +75,16 @@
       "avatar-6.jpg",
       "avatar-7.jpg",
       "avatar-8.jpg"
+    ],
+    "emails": [
+      "mail1@hotmail.com",
+      "mail2@hotmail.com",
+      "mail3@hotmail.com",
+      "mail4@hotmail.com",
+      "mail5@hotmail.com",
+      "mail6@hotmail.com",
+      "mail17@hotmail.com",
+      "mail18@hotmail.com"
     ],
     "passwords": [
       "zxcvbn",
