@@ -1,5 +1,6 @@
-export * from './cli-application.js';
-export * from './command-parser.js';
-export * from './commands/help.command.js';
-export * from './commands/version.command.js';
-export * from './commands/import.command.js';
+export { CLIApplication } from './cli-application.js';
+export { CommandParser } from './command-parser.js';
+export { HelpCommand } from './commands/help.command.js';
+export { VersionCommand } from './commands/version.command.js';
+export { ImportCommand } from './commands/import.command.js';
+export { GenerateCommand } from './commands/generate.command.js';
