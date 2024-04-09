@@ -7,12 +7,14 @@ import {
 import { Component } from './shared/types/index.js';
 import { createUserContainer } from './shared/libs/modules/user/index.js';
 import { createCoordinatesContainer } from './shared/libs/modules/coordinates/index.js';
+import { createOfferContainer } from './shared/libs/modules/offer/index.js';
 
 async function bootstrap() {
   const diContainer = Container.merge(
     createRestApplicationContainer(),
     createUserContainer(),
-    createCoordinatesContainer()
+    createCoordinatesContainer(),
+    createOfferContainer()
   );
 
   const application = diContainer.get<RestApplication>(
