@@ -22,7 +22,7 @@ export class UserEntity extends defaultClasses.TimeStamps {
   @prop({ required: true, type: String })
   public password: string;
 
-  @prop({required: true, type: UserType, enum: UserType, default: UserType['обычный']})
+  @prop({required: true, type: String, enum: UserType, default: UserType['обычный']})
   public type: UserType;
 
   constructor(userData: User) {
