@@ -1,6 +1,7 @@
 import { Ref, defaultClasses, getModelForClass, modelOptions, prop } from '@typegoose/typegoose';
-import { OfferFeature, OfferType } from '../../../types/index.js';
+import { OfferType } from '../../../types/index.js';
 import { UserEntity } from '../user/user.entity.js';
+
 
 export interface OfferEntity extends defaultClasses.Base {}
 
@@ -25,7 +26,7 @@ export class OfferEntity extends defaultClasses.TimeStamps {
   @prop({ required: true, type: String })
   public previewImage: string;
 
-  @prop({ required: true, type: [String] })
+  @prop({ type: Array<string>, required: true, default: [] })
   public images: string[];
 
   @prop({ required: true, type: Boolean })
@@ -46,8 +47,8 @@ export class OfferEntity extends defaultClasses.TimeStamps {
   @prop({ required: true, type: Number })
   public guestsCount: number;
 
-  @prop({ required: true, type: [String], enum: OfferFeature })
-  public features: OfferFeature[];
+  @prop({ required: true, type: Array })
+  public features: string[];
 
   @prop({ required: true, ref: UserEntity, type: UserEntity, _id: false })
   public authorId: Ref<UserEntity>;
