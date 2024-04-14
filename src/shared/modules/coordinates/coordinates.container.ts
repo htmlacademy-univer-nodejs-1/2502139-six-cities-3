@@ -1,5 +1,5 @@
 import { Container } from 'inversify';
-import { Component } from '../../../types/index.js';
+import { Component } from '../../types/index.js';
 import { types } from '@typegoose/typegoose';
 import { CoordinatesEntity, CoordinatesModel } from './coordinates.entity.js';
 

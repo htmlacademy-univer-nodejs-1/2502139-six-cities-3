@@ -1,7 +1,7 @@
 import { DocumentType, types } from '@typegoose/typegoose';
 import { inject } from 'inversify';
-import { Component } from '../../../types/index.js';
-import { Logger } from '../../logger/index.js';
+import { Component } from '../../types/index.js';
+import { Logger } from '../../libs/logger/index.js';
 import { CoordinatesService } from './coordinates-service.interface.js';
 import { CreateCoordinatesDto } from './dto/create-coordinates.dto.js';
 import { CoordinatesEntity } from './coordinates.entity.js';

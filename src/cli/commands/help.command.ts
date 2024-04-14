@@ -11,9 +11,9 @@ export class HelpCommand implements Command {
     console.info(chalk.yellow('Пример команды:  main.cli.js --<command> [arguments]'));
     console.info(chalk.cyan(`
 Команды:
-  --version:                    # Получение версии CLI
-  --help:                       # Получение мануала по работе с CLI
-  --import <path>:              # Инмпорт данных из TSV файла
-  --generate <n> <path> <url>   # Генерация данных\n`));
+  --version:                                                                  # Получение версии CLI
+  --help:                                                                     # Получение мануала по работе с CLI
+  --import <tsv-file> <db-login> <db-password> <db-host> <db-name> <salt>:    # Инмпорт данных из TSV файла
+  --generate <n> <path> <url>                                                 # Генерация данных\n`));
   }
 }
