@@ -1,4 +1,4 @@
-import { Offer, OfferFeature, OfferType, UserType } from '../types/index.js';
+import { City, Offer, OfferFeature, OfferType, UserType } from '../types/index.js';
 
 export const createOffer = (offerData: string): Offer => {
   const [
@@ -29,7 +29,7 @@ export const createOffer = (offerData: string): Offer => {
     name,
     description,
     publicationDate: new Date(publicationDate),
-    city,
+    city: city as City,
     previewImage,
     images: images.split(','),
     isPremium: isPremium === 'true',
@@ -39,7 +39,7 @@ export const createOffer = (offerData: string): Offer => {
     roomsCount: Number(roomsCount),
     guestsCount: Number(guestsCount),
     price: Number(price),
-    features: features.split(',') as OfferFeature[],
+    features: features.split(',').filter((i) => i) as OfferFeature[],
     author: {
       name: userName,
       email: userEmail,

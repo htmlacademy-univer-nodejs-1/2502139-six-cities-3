@@ -94,8 +94,8 @@ export class ImportCommand implements Command {
       guestsCount: offer.guestsCount,
       price: offer.price,
       features: offer.features,
-      authorId: user.id,
-      coordinates,
+      author: user.id,
+      coordinates: coordinates.id,
       commentsCount: offer.commentsCount
     });
   }
