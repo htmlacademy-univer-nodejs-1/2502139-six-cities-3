@@ -1,6 +1,7 @@
-import { Ref, defaultClasses, getModelForClass, modelOptions, prop } from '@typegoose/typegoose';
-import { OfferType } from '../../types/index.js';
+import { PropType, Ref, defaultClasses, getModelForClass, modelOptions, prop } from '@typegoose/typegoose';
+import { City, OfferFeature, OfferType } from '../../types/index.js';
 import { UserEntity } from '../user/user.entity.js';
+import { CoordinatesEntity } from '../coordinates/index.js';
 
 
 export interface OfferEntity extends defaultClasses.Base {}
@@ -20,13 +21,13 @@ export class OfferEntity extends defaultClasses.TimeStamps {
   @prop({ required: true, type: Date })
   public publicationDate: Date;
 
-  @prop({ required: true, type: String })
+  @prop({ required: true, type: String, enum: City })
   public city: string;
 
   @prop({ required: true, type: String })
   public previewImage: string;
 
-  @prop({ type: Array<string>, required: true, default: [] })
+  @prop({ type: () => [String], required: true}, PropType.ARRAY)
   public images: string[];
 
   @prop({ required: true, type: Boolean })
@@ -47,14 +48,17 @@ export class OfferEntity extends defaultClasses.TimeStamps {
   @prop({ required: true, type: Number })
   public guestsCount: number;
 
-  @prop({ required: true, type: Array })
+  @prop({ required: true, type: () => [String], enum: OfferFeature }, PropType.ARRAY)
   public features: string[];
 
-  @prop({ required: true, ref: UserEntity, type: UserEntity, _id: false })
-  public authorId: Ref<UserEntity>;
+  @prop({ required: true, ref: UserEntity })
+  public author: Ref<UserEntity>;
 
   @prop({ required: true, type: Number, default: () => 0 })
   public commentsCount: number;
+
+  @prop({ required: true, ref: CoordinatesEntity })
+  public coordinates: Ref<CoordinatesEntity>;
 }
 
 export const OfferModel = getModelForClass(OfferEntity);

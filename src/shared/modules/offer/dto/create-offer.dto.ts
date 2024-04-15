@@ -1,4 +1,4 @@
-import { Coordinates, OfferFeature, OfferType } from '../../../../types/index.js';
+import { OfferFeature, OfferType } from '../../../types/index.js';
 
 
 export class CreateOfferDto {
@@ -16,8 +16,8 @@ export class CreateOfferDto {
   public guestsCount: number;
   public price: number;
   public features: OfferFeature[];
-  public authorId: string;
+  public author: string;
   public commentsCount: number;
-  public coordinates: Coordinates;
+  public coordinates: string;
 
 }

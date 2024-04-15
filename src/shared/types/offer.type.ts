@@ -2,12 +2,13 @@ import { OfferType } from './offer-type.enum';
 import { OfferFeature } from './offer-feature.enum';
 import { Coordinates } from './coordinates.type';
 import { User } from './user.type';
+import { City } from './city.enum';
 
 export type Offer = {
   name: string,
   description: string,
   publicationDate: Date,
-  city: string,
+  city: City,
   previewImage: string,
   images: string[],
   isPremium: boolean,

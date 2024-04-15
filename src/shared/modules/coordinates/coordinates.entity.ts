@@ -1,5 +1,5 @@
 import { defaultClasses, getModelForClass, modelOptions, prop } from '@typegoose/typegoose';
-import { Coordinates } from '../../../types';
+import { Coordinates } from '../../types';
 
 export interface CoordinatesEntity extends defaultClasses.Base {}
 

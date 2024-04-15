@@ -11,7 +11,8 @@ export class RestApplication {
   constructor(
     @inject(Component.Logger) private readonly logger: Logger,
     @inject(Component.Config) private readonly config: Config<RestSchema>,
-    @inject(Component.DatabaseClient) private readonly databaseClient: DatabaseClient
+    @inject(Component.DatabaseClient)
+    private readonly databaseClient: DatabaseClient,
   ) {}
 
   private async _initDb() {
@@ -20,7 +21,7 @@ export class RestApplication {
       this.config.get('DB_PASSWORD'),
       this.config.get('DB_HOST'),
       this.config.get('DB_PORT'),
-      this.config.get('DB_NAME'),
+      this.config.get('DB_NAME')
     );
 
     return this.databaseClient.connect(mongoUri);
