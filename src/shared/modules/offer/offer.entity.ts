@@ -1,5 +1,5 @@
 import { Ref, defaultClasses, getModelForClass, modelOptions, prop } from '@typegoose/typegoose';
-import { OfferType } from '../../../types/index.js';
+import { OfferType } from '../../types/index.js';
 import { UserEntity } from '../user/user.entity.js';
 
 

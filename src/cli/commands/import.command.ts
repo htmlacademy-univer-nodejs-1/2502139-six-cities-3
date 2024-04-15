@@ -16,18 +16,18 @@ import {
   DefaultUserService,
   UserModel,
   UserService,
-} from '../../shared/libs/modules/user/index.js';
+} from '../../shared/modules/user/index.js';
 import {
   CoordinatesModel,
   CoordinatesService,
   DefaultCoordinatesService,
-} from '../../shared/libs/modules/coordinates/index.js';
+} from '../../shared/modules/coordinates/index.js';
 import { Offer } from '../../shared/types/index.js';
 import {
   DefaultOfferService,
   OfferModel,
   OfferService,
-} from '../../shared/libs/modules/offer/index.js';
+} from '../../shared/modules/offer/index.js';
 
 export class ImportCommand implements Command {
   private userService: UserService;
