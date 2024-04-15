@@ -5,19 +5,24 @@ import { Logger } from '../../libs/logger/index.js';
 import { DocumentType, types } from '@typegoose/typegoose';
 import { OfferEntity } from './offer.entity.js';
 import { CreateOfferDto } from './dto/create-offer.dto.js';
-import { DEFAULT_OFFER_COUNT } from './offer.constant.js';
 import { UpdateOfferDto } from './dto/update-offer.dto.js';
+import { CommentEntity } from '../comment/index.js';
 
 @injectable()
 export class DefaultOfferService implements OfferService {
   constructor(
     @inject(Component.Logger) private readonly logger: Logger,
     @inject(Component.OfferModel)
-    private readonly offerModel: types.ModelType<OfferEntity>
+    private readonly offerModel: types.ModelType<OfferEntity>,
+    @inject(Component.CommentModel)
+    private readonly commentModel: types.ModelType<CommentEntity>,
   ) {}
 
   public async create(dto: CreateOfferDto): Promise<DocumentType<OfferEntity>> {
-    const result = (await this.offerModel.create(dto)).populate(['author', 'coordinates']);
+    const result = (await this.offerModel.create(dto)).populate([
+      'author',
+      'coordinates',
+    ]);
     this.logger.info(`Создан новый оффер: ${dto.name}`);
 
     return result;
@@ -33,16 +38,16 @@ export class DefaultOfferService implements OfferService {
   }
 
   public async find(): Promise<DocumentType<OfferEntity>[]> {
-    return this.offerModel
-      .find()
-      .populate(['author', 'coordinates'])
-      .exec();
+    return this.offerModel.find().populate(['author', 'coordinates']).exec();
   }
 
   public async deleteById(
     offerId: string
   ): Promise<DocumentType<OfferEntity> | null> {
-    return this.offerModel.findByIdAndDelete(offerId).populate(['author', 'coordinates']).exec();
+    return this.offerModel
+      .findByIdAndDelete(offerId)
+      .populate(['author', 'coordinates'])
+      .exec();
   }
 
   public async updateById(
@@ -51,17 +56,6 @@ export class DefaultOfferService implements OfferService {
   ): Promise<DocumentType<OfferEntity> | null> {
     return this.offerModel
       .findByIdAndUpdate(offerId, dto, { new: true })
-      .populate(['author', 'coordinates'])
-      .exec();
-  }
-
-  public async findByCategoryId(
-    categoryId: string,
-    count?: number
-  ): Promise<DocumentType<OfferEntity>[]> {
-    const limit = count ?? DEFAULT_OFFER_COUNT;
-    return this.offerModel
-      .find({ categories: categoryId }, {}, { limit })
       .populate(['author', 'coordinates'])
       .exec();
   }
@@ -76,7 +70,20 @@ export class DefaultOfferService implements OfferService {
     return this.offerModel
       .findByIdAndUpdate(offerId, {
         $inc: {
-          commentCount: 1,
+          commentsCount: 1,
+        },
+      })
+      .populate(['author', 'coordinates'])
+      .exec();
+  }
+
+  public async decCommentCount(
+    offerId: string
+  ): Promise<DocumentType<OfferEntity> | null> {
+    return this.offerModel
+      .findByIdAndUpdate(offerId, {
+        $inc: {
+          commentsCount: -1,
         },
       })
       .populate(['author', 'coordinates'])
@@ -97,9 +104,24 @@ export class DefaultOfferService implements OfferService {
   ): Promise<DocumentType<OfferEntity>[]> {
     return this.offerModel
       .find()
-      .sort({ commentCount: SortType.Down })
+      .sort({ commentsCount: SortType.Down })
       .limit(count)
       .populate(['userId', 'categories'])
       .exec();
+  }
+
+  public async updateRating(
+    offerId: string
+  ): Promise<DocumentType<OfferEntity> | null> {
+    const rating = (await this.commentModel.find({offer: offerId}))?.reduce(
+      (avg, comment, _, { length }) => avg + comment.rating / length,
+      0
+    ).toFixed(1);
+
+    if (!rating) {
+      return null;
+    }
+
+    return await this.offerModel.findByIdAndUpdate(offerId, { rating });
   }
 }
