@@ -28,6 +28,7 @@ import {
   OfferModel,
   OfferService,
 } from '../../shared/modules/offer/index.js';
+import { CommentModel } from '../../shared/modules/comment/index.js';
 
 export class ImportCommand implements Command {
   private userService: UserService;
@@ -42,7 +43,7 @@ export class ImportCommand implements Command {
     this.onCompleteImport = this.onCompleteImport.bind(this);
 
     this.logger = new PinoLogger();
-    this.offerService = new DefaultOfferService(this.logger, OfferModel);
+    this.offerService = new DefaultOfferService(this.logger, OfferModel, CommentModel);
     this.coordinatesService = new DefaultCoordinatesService(
       this.logger,
       CoordinatesModel
