@@ -1,11 +1,11 @@
 import { OfferType } from './offer-type.enum';
-import { OfferFeature } from './offer-feature.enum';
+import { OfferGood as OfferGood } from './offer-good.enum';
 import { Coordinates } from './coordinates.type';
 import { User } from './user.type';
 import { City } from './city.enum';
 
 export type Offer = {
-  name: string,
+  title: string,
   description: string,
   publicationDate: Date,
   city: City,
@@ -15,11 +15,11 @@ export type Offer = {
   isFavorite: boolean,
   rating: number,
   type: OfferType,
-  roomsCount: number,
-  guestsCount: number,
+  bedrooms: number,
+  maxAdults: number,
   price: number,
-  features: OfferFeature[],
-  author: User,
+  goods: OfferGood[],
+  host: User,
   commentsCount: number,
-  coordinates: Coordinates
+  location: Coordinates
 }

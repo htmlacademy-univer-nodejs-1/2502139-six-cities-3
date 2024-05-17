@@ -1,8 +1,8 @@
-import { OfferFeature, OfferType } from '../../../types/index.js';
+import { OfferGood, OfferType } from '../../../types/index.js';
 
 
 export class CreateOfferDto {
-  public name: string;
+  public title: string;
   public description: string;
   public publicationDate: Date;
   public city: string;
@@ -11,13 +11,13 @@ export class CreateOfferDto {
   public isPremium: boolean;
   public isFavorite: boolean;
   public rating: number;
-  public type: OfferType;
-  public roomsCount: number;
-  public guestsCount: number;
   public price: number;
-  public features: OfferFeature[];
-  public author: string;
+  public type: OfferType;
+  public bedrooms: number;
+  public maxAdults: number;
+  public goods: OfferGood[];
+  public host: string;
   public commentsCount: number;
-  public coordinates: string;
+  public location: string;
 
 }

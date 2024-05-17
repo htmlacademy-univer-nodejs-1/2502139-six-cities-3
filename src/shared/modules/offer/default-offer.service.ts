@@ -20,10 +20,10 @@ export class DefaultOfferService implements OfferService {
 
   public async create(dto: CreateOfferDto): Promise<DocumentType<OfferEntity>> {
     const result = (await this.offerModel.create(dto)).populate([
-      'author',
-      'coordinates',
+      'host',
+      'location',
     ]);
-    this.logger.info(`Создан новый оффер: ${dto.name}`);
+    this.logger.info(`Создан новый оффер: ${dto.title}`);
 
     return result;
   }
@@ -33,12 +33,12 @@ export class DefaultOfferService implements OfferService {
   ): Promise<DocumentType<OfferEntity> | null> {
     return this.offerModel
       .findById(offerId)
-      .populate(['author', 'coordinates'])
+      .populate(['host', 'location'])
       .exec();
   }
 
   public async find(): Promise<DocumentType<OfferEntity>[]> {
-    return this.offerModel.find().populate(['author', 'coordinates']).exec();
+    return this.offerModel.find().populate(['host', 'location']).exec();
   }
 
   public async deleteById(
@@ -46,7 +46,7 @@ export class DefaultOfferService implements OfferService {
   ): Promise<DocumentType<OfferEntity> | null> {
     return this.offerModel
       .findByIdAndDelete(offerId)
-      .populate(['author', 'coordinates'])
+      .populate(['host', 'location'])
       .exec();
   }
 
@@ -56,7 +56,7 @@ export class DefaultOfferService implements OfferService {
   ): Promise<DocumentType<OfferEntity> | null> {
     return this.offerModel
       .findByIdAndUpdate(offerId, dto, { new: true })
-      .populate(['author', 'coordinates'])
+      .populate(['host', 'location'])
       .exec();
   }
 
@@ -73,7 +73,7 @@ export class DefaultOfferService implements OfferService {
           commentsCount: 1,
         },
       })
-      .populate(['author', 'coordinates'])
+      .populate(['host', 'location'])
       .exec();
   }
 
@@ -86,7 +86,7 @@ export class DefaultOfferService implements OfferService {
           commentsCount: -1,
         },
       })
-      .populate(['author', 'coordinates'])
+      .populate(['host', 'location'])
       .exec();
   }
 
@@ -95,7 +95,7 @@ export class DefaultOfferService implements OfferService {
       .find()
       .sort({ createdAt: SortType.Down })
       .limit(count)
-      .populate(['author', 'coordinates'])
+      .populate(['host', 'location'])
       .exec();
   }
 

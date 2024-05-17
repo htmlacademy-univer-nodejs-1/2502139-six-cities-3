@@ -69,19 +69,19 @@ export class ImportCommand implements Command {
 
   private async saveOffer(offer: Offer) {
     const coordinates = await this.coordinatesService.findOrCreate(
-      offer.coordinates
+      offer.location
     );
 
     const user = await this.userService.findOrCreate(
       {
-        ...offer.author,
+        ...offer.host,
         password: DEFAULT_USER_PASSWORD,
       },
       this.salt
     );
 
     await this.offerService.create({
-      name: offer.name,
+      title: offer.title,
       description: offer.description,
       publicationDate: offer.publicationDate,
       city: offer.city,
@@ -91,12 +91,12 @@ export class ImportCommand implements Command {
       isFavorite: offer.isFavorite,
       rating: offer.rating,
       type: offer.type,
-      roomsCount: offer.roomsCount,
-      guestsCount: offer.guestsCount,
+      bedrooms: offer.bedrooms,
+      maxAdults: offer.maxAdults,
       price: offer.price,
-      features: offer.features,
-      author: user.id,
-      coordinates: coordinates.id,
+      goods: offer.goods,
+      host: user.id,
+      location: coordinates.id,
       commentsCount: offer.commentsCount
     });
   }

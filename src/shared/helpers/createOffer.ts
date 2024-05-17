@@ -1,8 +1,8 @@
-import { City, Offer, OfferFeature, OfferType, UserType } from '../types/index.js';
+import { City, Offer, OfferGood, OfferType, UserType } from '../types/index.js';
 
 export const createOffer = (offerData: string): Offer => {
   const [
-    name,
+    title,
     description,
     publicationDate,
     city,
@@ -12,21 +12,21 @@ export const createOffer = (offerData: string): Offer => {
     isFavorite,
     rating,
     type,
-    roomsCount,
-    guestsCount,
+    bedrooms,
+    maxAdults,
     price,
-    features,
+    goods,
     author,
     commentsCount,
-    coordinates,
+    location,
   ] = offerData.replace('\n', '').split('\t');
 
   const [userName, userEmail, userAvatar, userPassword, userType] =
     author.split(',');
-  const [latitude, longitude] = coordinates.split(' ');
+  const [latitude, longitude] = location.split(' ');
 
   return {
-    name,
+    title,
     description,
     publicationDate: new Date(publicationDate),
     city: city as City,
@@ -36,11 +36,11 @@ export const createOffer = (offerData: string): Offer => {
     isFavorite: isFavorite === 'true',
     rating: Number(rating),
     type: type as OfferType,
-    roomsCount: Number(roomsCount),
-    guestsCount: Number(guestsCount),
+    bedrooms: Number(bedrooms),
+    maxAdults: Number(maxAdults),
     price: Number(price),
-    features: features.split(',').filter((i) => i) as OfferFeature[],
-    author: {
+    goods: goods.split(',').filter((i) => i) as OfferGood[],
+    host: {
       name: userName,
       email: userEmail,
       password: userPassword,
@@ -48,7 +48,7 @@ export const createOffer = (offerData: string): Offer => {
       type: userType as UserType,
     },
     commentsCount: Number(commentsCount),
-    coordinates: {
+    location: {
       latitude: Number(latitude),
       longitude: Number(longitude),
     },

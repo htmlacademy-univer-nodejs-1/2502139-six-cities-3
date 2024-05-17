@@ -1,4 +1,4 @@
-export enum OfferFeature {
+export enum OfferGood {
   'Breakfast' = 'Breakfast',
   'Air conditioning' = 'Air conditioning',
   'Laptop friendly workspace' = 'Laptop friendly workspace',
