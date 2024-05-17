@@ -15,7 +15,7 @@ export class DefaultOfferService implements OfferService {
     @inject(Component.OfferModel)
     private readonly offerModel: types.ModelType<OfferEntity>,
     @inject(Component.CommentModel)
-    private readonly commentModel: types.ModelType<CommentEntity>,
+    private readonly commentModel: types.ModelType<CommentEntity>
   ) {}
 
   public async create(dto: CreateOfferDto): Promise<DocumentType<OfferEntity>> {
@@ -113,10 +113,12 @@ export class DefaultOfferService implements OfferService {
   public async updateRating(
     offerId: string
   ): Promise<DocumentType<OfferEntity> | null> {
-    const rating = (await this.commentModel.find({offer: offerId}))?.reduce(
-      (avg, comment, _, { length }) => avg + comment.rating / length,
-      0
-    ).toFixed(1);
+    const rating = (await this.commentModel.find({ offer: offerId }))
+      ?.reduce(
+        (avg, comment, _, { length }) => avg + comment.rating / length,
+        0
+      )
+      .toFixed(1);
 
     if (!rating) {
       return null;
