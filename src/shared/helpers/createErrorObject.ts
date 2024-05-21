@@ -1,6 +1,7 @@
 
-export function createErrorObject(message: string) {
+export function createErrorObject(message: string, errors: Error[]) {
   return {
-    error: message,
+    message,
+    errors
   };
 }

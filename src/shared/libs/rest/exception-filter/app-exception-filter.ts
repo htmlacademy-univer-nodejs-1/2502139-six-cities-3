@@ -23,7 +23,7 @@ export class AppExceptionFilter implements ExceptionFilter {
       error,
       `[${error.detail}]: ${error.httpStatusCode} — ${error.message}`
     );
-    res.status(error.httpStatusCode).json(createErrorObject(error.message));
+    res.status(error.httpStatusCode).json(createErrorObject(error.message, error.detail || []));
   }
 
   private handleOtherError(
@@ -35,7 +35,7 @@ export class AppExceptionFilter implements ExceptionFilter {
     this.logger.error(error, error.message);
     res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
-      .json(createErrorObject(error.message));
+      .json(createErrorObject(error.message, [error]));
   }
 
   public catch(
