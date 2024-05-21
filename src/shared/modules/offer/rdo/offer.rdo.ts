@@ -1,4 +1,4 @@
-import { Expose, Type } from 'class-transformer';
+import { Expose, Transform, Type } from 'class-transformer';
 import { City, Coordinates, OfferGood, OfferType } from '../../../types/index.js';
 import { UserRdo } from '../../user/index.js';
 
@@ -22,12 +22,30 @@ export class OfferRdo {
   public isFavorite: boolean;
 
   @Expose()
-  public city: {
-    name: City,
-    location: Coordinates
-  };
+  @Transform(({obj, value}) => {
+    const {latitude, longitude} = obj;
+
+    const result = {
+      name: value,
+      location: {
+        latitude,
+        longitude
+      }
+    };
+
+    return result;
+  })
+  public city: City;
 
   @Expose()
+  @Transform(({obj}) => {
+    const {latitude, longitude} = obj;
+
+    return {
+      latitude,
+      longitude
+    };
+  })
   public location: Coordinates;
 
   @Expose()

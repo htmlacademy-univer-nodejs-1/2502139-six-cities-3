@@ -6,3 +6,4 @@ export * from './getErrorMessage.js';
 export * from './getMongoURI.js';
 export * from './createSHA256.js';
 export * from './fillDTO.js';
+export * from './createErrorObject.js';

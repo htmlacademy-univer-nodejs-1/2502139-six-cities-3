@@ -19,10 +19,21 @@ export class DefaultOfferService implements OfferService {
   ) {}
 
   public async create(dto: CreateOfferDto): Promise<DocumentType<OfferEntity>> {
-    const result = (await this.offerModel.create(dto)).populate([
-      'host',
-      'location',
-    ]);
+    const {
+      city: { name: city },
+      location: { latitude, longitude },
+      ...rest
+    } = dto;
+
+    const result = (
+      await this.offerModel.create({
+        ...rest,
+        latitude,
+        longitude,
+        city,
+        host: '6648db24acb6eef6c576c362',
+      })
+    ).populate(['host']);
     this.logger.info(`Создан новый оффер: ${dto.title}`);
 
     return result;
@@ -31,32 +42,37 @@ export class DefaultOfferService implements OfferService {
   public async findById(
     offerId: string
   ): Promise<DocumentType<OfferEntity> | null> {
-    return this.offerModel
-      .findById(offerId)
-      .populate(['host', 'location'])
-      .exec();
+    return this.offerModel.findById(offerId).populate(['host']).exec();
   }
 
   public async find(): Promise<DocumentType<OfferEntity>[]> {
-    return this.offerModel.find().populate(['host', 'location']).exec();
+    return this.offerModel.find().populate(['host']).exec();
   }
 
   public async deleteById(
     offerId: string
   ): Promise<DocumentType<OfferEntity> | null> {
-    return this.offerModel
-      .findByIdAndDelete(offerId)
-      .populate(['host', 'location'])
-      .exec();
+    return this.offerModel.findByIdAndDelete(offerId).populate(['host']).exec();
   }
 
   public async updateById(
     offerId: string,
     dto: UpdateOfferDto
   ): Promise<DocumentType<OfferEntity> | null> {
+    const { city, location, ...rest } = dto;
+
     return this.offerModel
-      .findByIdAndUpdate(offerId, dto, { new: true })
-      .populate(['host', 'location'])
+      .findByIdAndUpdate(
+        offerId,
+        {
+          ...rest,
+          city: city?.name,
+          latitude: location?.latitude,
+          longitude: location?.longitude,
+        },
+        { new: true }
+      )
+      .populate(['host'])
       .exec();
   }
 
@@ -73,7 +89,7 @@ export class DefaultOfferService implements OfferService {
           commentsCount: 1,
         },
       })
-      .populate(['host', 'location'])
+      .populate(['host'])
       .exec();
   }
 
@@ -86,7 +102,7 @@ export class DefaultOfferService implements OfferService {
           commentsCount: -1,
         },
       })
-      .populate(['host', 'location'])
+      .populate(['host'])
       .exec();
   }
 
@@ -95,7 +111,7 @@ export class DefaultOfferService implements OfferService {
       .find()
       .sort({ createdAt: SortType.Down })
       .limit(count)
-      .populate(['host', 'location'])
+      .populate(['host'])
       .exec();
   }
 
@@ -106,7 +122,7 @@ export class DefaultOfferService implements OfferService {
       .find()
       .sort({ commentsCount: SortType.Down })
       .limit(count)
-      .populate(['userId', 'categories'])
+      .populate(['host', 'categories'])
       .exec();
   }
 
@@ -125,5 +141,13 @@ export class DefaultOfferService implements OfferService {
     }
 
     return await this.offerModel.findByIdAndUpdate(offerId, { rating });
+  }
+
+  public async findFavorite(): Promise<DocumentType<OfferEntity>[]> {
+    return this.offerModel.find().populate(['host']).exec();
+  }
+
+  public async findPremium(): Promise<DocumentType<OfferEntity>[]> {
+    return this.offerModel.find().populate(['host']).exec();
   }
 }

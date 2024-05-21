@@ -17,11 +17,6 @@ import {
   UserModel,
   UserService,
 } from '../../shared/modules/user/index.js';
-import {
-  CoordinatesModel,
-  CoordinatesService,
-  DefaultCoordinatesService,
-} from '../../shared/modules/coordinates/index.js';
 import { Offer } from '../../shared/types/index.js';
 import {
   DefaultOfferService,
@@ -32,7 +27,6 @@ import { CommentModel } from '../../shared/modules/comment/index.js';
 
 export class ImportCommand implements Command {
   private userService: UserService;
-  private coordinatesService: CoordinatesService;
   private offerService: OfferService;
   private databaseClient: DatabaseClient;
   private logger: Logger;
@@ -44,10 +38,6 @@ export class ImportCommand implements Command {
 
     this.logger = new PinoLogger();
     this.offerService = new DefaultOfferService(this.logger, OfferModel, CommentModel);
-    this.coordinatesService = new DefaultCoordinatesService(
-      this.logger,
-      CoordinatesModel
-    );
     this.userService = new DefaultUserService(this.logger, UserModel);
     this.databaseClient = new MongoDatabaseClient(this.logger);
   }
@@ -68,10 +58,6 @@ export class ImportCommand implements Command {
   }
 
   private async saveOffer(offer: Offer) {
-    const coordinates = await this.coordinatesService.findOrCreate(
-      offer.location
-    );
-
     const user = await this.userService.findOrCreate(
       {
         ...offer.host,
@@ -83,21 +69,19 @@ export class ImportCommand implements Command {
     await this.offerService.create({
       title: offer.title,
       description: offer.description,
-      publicationDate: offer.publicationDate,
-      city: offer.city,
+      city: {
+        name: offer.city,
+        location: offer.location
+      },
       previewImage: offer.previewImage,
       images: offer.images,
       isPremium: offer.isPremium,
-      isFavorite: offer.isFavorite,
-      rating: offer.rating,
       type: offer.type,
       bedrooms: offer.bedrooms,
       maxAdults: offer.maxAdults,
       price: offer.price,
       goods: offer.goods,
-      host: user.id,
-      location: coordinates.id,
-      commentsCount: offer.commentsCount
+      location: offer.location
     });
   }
 

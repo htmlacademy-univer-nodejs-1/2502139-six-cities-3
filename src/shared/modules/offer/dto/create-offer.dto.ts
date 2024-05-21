@@ -1,23 +1,18 @@
-import { OfferGood, OfferType } from '../../../types/index.js';
+import { CityType } from '../../../types/city.type.js';
+import { Coordinates, OfferGood, OfferType } from '../../../types/index.js';
 
 
 export class CreateOfferDto {
   public title: string;
   public description: string;
-  public publicationDate: Date;
-  public city: string;
+  public city: CityType;
   public previewImage: string;
-  public images: string[];
   public isPremium: boolean;
-  public isFavorite: boolean;
-  public rating: number;
-  public price: number;
   public type: OfferType;
   public bedrooms: number;
   public maxAdults: number;
+  public price: number;
   public goods: OfferGood[];
-  public host: string;
-  public commentsCount: number;
-  public location: string;
-
+  public location: Coordinates;
+  public images: string[];
 }

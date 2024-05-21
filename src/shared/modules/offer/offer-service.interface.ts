@@ -15,4 +15,6 @@ export interface OfferService {
   findNew(count: number): Promise<DocumentType<OfferEntity>[]>;
   findDiscussed(count: number): Promise<DocumentType<OfferEntity>[]>;
   exists(documentId: string): Promise<boolean>;
+  findFavorite(): Promise<DocumentType<OfferEntity>[]>;
+  findPremium(): Promise<DocumentType<OfferEntity>[]>;
 }
