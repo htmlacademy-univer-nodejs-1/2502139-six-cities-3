@@ -10,4 +10,5 @@ export interface CommentService {
   findByAuthorId(authorId: string): Promise<DocumentType<CommentEntity>[] | null>
   updateById(commentId: string, dto: UpdateCommentDto): Promise<DocumentType<CommentEntity> | null>
   deleteById(commentId: string): Promise<DocumentType<CommentEntity> | null>
+  deleteByOfferId(offerId: string): Promise<number>
 }

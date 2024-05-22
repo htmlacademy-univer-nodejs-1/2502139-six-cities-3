@@ -23,10 +23,10 @@ export class DefaultCommentService implements CommentService {
   ): Promise<types.DocumentType<CommentEntity>> {
     const comment = await (
       await this.commentModel.create(dto)
-    ).populate(['author', 'offer']);
-    this.logger.info(`Создан новый комментарий: ${dto.text}`);
+    ).populate(['user', 'offer']);
+    this.logger.info(`Создан новый комментарий: ${dto.comment}`);
 
-    await this.offerService.decCommentCount(comment.offer.id);
+    await this.offerService.incCommentCount(comment.offer.id);
     await this.offerService.updateRating(comment.offer.id);
 
     return comment;
@@ -37,7 +37,7 @@ export class DefaultCommentService implements CommentService {
   ): Promise<types.DocumentType<CommentEntity> | null> {
     return this.commentModel
       .findById(commentId)
-      .populate(['author', 'offer'])
+      .populate(['user', 'offer'])
       .exec();
   }
 
@@ -45,8 +45,8 @@ export class DefaultCommentService implements CommentService {
     authorId: string
   ): Promise<types.DocumentType<CommentEntity>[] | null> {
     return this.commentModel
-      .find({ author: authorId })
-      .populate(['author', 'offer'])
+      .find({ user: authorId })
+      .populate(['user', 'offer'])
       .exec();
   }
 
@@ -55,7 +55,7 @@ export class DefaultCommentService implements CommentService {
   ): Promise<types.DocumentType<CommentEntity>[] | null> {
     return this.commentModel
       .find({ offer: offerId })
-      .populate(['author', 'offer'])
+      .populate(['user', 'offer'])
       .exec();
   }
 
@@ -65,14 +65,14 @@ export class DefaultCommentService implements CommentService {
   ): Promise<types.DocumentType<CommentEntity> | null> {
     return this.commentModel
       .findByIdAndUpdate(commentId, dto, { new: true })
-      .populate(['author', 'offer'])
+      .populate(['user', 'offer'])
       .exec();
   }
 
   public async deleteById(commentId: string): Promise<types.DocumentType<CommentEntity> | null> {
     const comment = await this.commentModel
       .findByIdAndDelete(commentId, { new: true })
-      .populate(['author', 'offer'])
+      .populate(['user', 'offer'])
       .exec();
 
     if (!comment) {
@@ -83,5 +83,13 @@ export class DefaultCommentService implements CommentService {
     await this.offerService.updateRating(comment.offer.id);
 
     return comment;
+  }
+
+  public async deleteByOfferId(offerId: string): Promise<number> {
+    const comments = await this.commentModel
+      .deleteMany({offer: offerId})
+      .exec();
+
+    return comments.deletedCount;
   }
 }

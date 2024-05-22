@@ -15,15 +15,26 @@ export class DefaultOfferService implements OfferService {
     @inject(Component.OfferModel)
     private readonly offerModel: types.ModelType<OfferEntity>,
     @inject(Component.CommentModel)
-    private readonly commentModel: types.ModelType<CommentEntity>,
+    private readonly commentModel: types.ModelType<CommentEntity>
   ) {}
 
   public async create(dto: CreateOfferDto): Promise<DocumentType<OfferEntity>> {
-    const result = (await this.offerModel.create(dto)).populate([
-      'author',
-      'coordinates',
-    ]);
-    this.logger.info(`Создан новый оффер: ${dto.name}`);
+    const {
+      city: { name: city },
+      location: { latitude, longitude },
+      ...rest
+    } = dto;
+
+    const result = (
+      await this.offerModel.create({
+        ...rest,
+        latitude,
+        longitude,
+        city,
+        host: '6648db24acb6eef6c576c362',
+      })
+    ).populate(['host']);
+    this.logger.info(`Создан новый оффер: ${dto.title}`);
 
     return result;
   }
@@ -31,32 +42,37 @@ export class DefaultOfferService implements OfferService {
   public async findById(
     offerId: string
   ): Promise<DocumentType<OfferEntity> | null> {
-    return this.offerModel
-      .findById(offerId)
-      .populate(['author', 'coordinates'])
-      .exec();
+    return this.offerModel.findById(offerId).populate(['host']).exec();
   }
 
   public async find(): Promise<DocumentType<OfferEntity>[]> {
-    return this.offerModel.find().populate(['author', 'coordinates']).exec();
+    return this.offerModel.find().populate(['host']).exec();
   }
 
   public async deleteById(
     offerId: string
   ): Promise<DocumentType<OfferEntity> | null> {
-    return this.offerModel
-      .findByIdAndDelete(offerId)
-      .populate(['author', 'coordinates'])
-      .exec();
+    return this.offerModel.findByIdAndDelete(offerId).populate(['host']).exec();
   }
 
   public async updateById(
     offerId: string,
     dto: UpdateOfferDto
   ): Promise<DocumentType<OfferEntity> | null> {
+    const { city, location, ...rest } = dto;
+
     return this.offerModel
-      .findByIdAndUpdate(offerId, dto, { new: true })
-      .populate(['author', 'coordinates'])
+      .findByIdAndUpdate(
+        offerId,
+        {
+          ...rest,
+          city: city?.name,
+          latitude: location?.latitude,
+          longitude: location?.longitude,
+        },
+        { new: true }
+      )
+      .populate(['host'])
       .exec();
   }
 
@@ -73,7 +89,7 @@ export class DefaultOfferService implements OfferService {
           commentsCount: 1,
         },
       })
-      .populate(['author', 'coordinates'])
+      .populate(['host'])
       .exec();
   }
 
@@ -86,7 +102,7 @@ export class DefaultOfferService implements OfferService {
           commentsCount: -1,
         },
       })
-      .populate(['author', 'coordinates'])
+      .populate(['host'])
       .exec();
   }
 
@@ -95,7 +111,7 @@ export class DefaultOfferService implements OfferService {
       .find()
       .sort({ createdAt: SortType.Down })
       .limit(count)
-      .populate(['author', 'coordinates'])
+      .populate(['host'])
       .exec();
   }
 
@@ -106,22 +122,32 @@ export class DefaultOfferService implements OfferService {
       .find()
       .sort({ commentsCount: SortType.Down })
       .limit(count)
-      .populate(['userId', 'categories'])
+      .populate(['host', 'categories'])
       .exec();
   }
 
   public async updateRating(
     offerId: string
   ): Promise<DocumentType<OfferEntity> | null> {
-    const rating = (await this.commentModel.find({offer: offerId}))?.reduce(
-      (avg, comment, _, { length }) => avg + comment.rating / length,
-      0
-    ).toFixed(1);
+    const rating = (await this.commentModel.find({ offer: offerId }))
+      ?.reduce(
+        (avg, comment, _, { length }) => avg + comment.rating / length,
+        0
+      )
+      .toFixed(1);
 
     if (!rating) {
       return null;
     }
 
     return await this.offerModel.findByIdAndUpdate(offerId, { rating });
+  }
+
+  public async findFavorite(): Promise<DocumentType<OfferEntity>[]> {
+    return this.offerModel.find().populate(['host']).exec();
+  }
+
+  public async findPremium(): Promise<DocumentType<OfferEntity>[]> {
+    return this.offerModel.find().populate(['host']).exec();
   }
 }

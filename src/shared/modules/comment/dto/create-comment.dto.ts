@@ -1,7 +1,6 @@
 export class CreateCommentDto {
-  public text: string;
-  public publicationDate: string;
+  public comment: string;
   public rating: number;
-  public author: string;
+  public user: string;
   public offer: string;
 }

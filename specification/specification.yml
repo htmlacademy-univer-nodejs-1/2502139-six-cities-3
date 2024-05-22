@@ -217,7 +217,7 @@ paths:
         '200':
           description: Объявление удалено из избранного
       deprecated: false
-  /premium?city={cityName}:
+  /premium:
     get:
       tags:
         - premium

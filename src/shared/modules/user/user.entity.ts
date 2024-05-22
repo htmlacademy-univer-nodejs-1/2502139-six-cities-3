@@ -17,7 +17,7 @@ export class UserEntity extends defaultClasses.TimeStamps {
   public email: string;
 
   @prop({ required: false, type: String })
-  public avatar?: string;
+  public avatarUrl?: string;
 
   @prop({ required: true, type: String })
   public password: string;
@@ -30,7 +30,7 @@ export class UserEntity extends defaultClasses.TimeStamps {
 
     this.name = userData.name;
     this.email = userData.email;
-    this.avatar = userData.avatar;
+    this.avatarUrl = userData.avatar;
     this.type = userData.type;
   }
 
