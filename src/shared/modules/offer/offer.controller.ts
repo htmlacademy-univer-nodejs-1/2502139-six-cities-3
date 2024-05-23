@@ -3,6 +3,7 @@ import { Request, Response } from 'express';
 import {
   BaseController,
   HttpMethod,
+  ValidateDtoMiddleware,
   ValidateObjectIdMiddleware,
 } from '../../libs/rest/index.js';
 import { Logger } from '../../libs/logger/index.js';
@@ -15,7 +16,13 @@ import {
   CreateOfferRequest,
   UpdateOfferRequest,
 } from './offer-requests.type.js';
-import { CommentRdo, CommentService } from '../comment/index.js';
+import {
+  CommentRdo,
+  CommentService,
+  CreateCommentDto,
+} from '../comment/index.js';
+import { CreateOfferDto } from './dto/create-offer.dto.js';
+import { UpdateOfferDto } from './dto/update-offer.dto.js';
 
 @injectable()
 export class OfferController extends BaseController {
@@ -30,7 +37,12 @@ export class OfferController extends BaseController {
     this.logger.info('Регистрация путей для контроллера предложений');
 
     this.addRoute({ path: '/', method: HttpMethod.Get, handler: this.index });
-    this.addRoute({ path: '/', method: HttpMethod.Post, handler: this.create });
+    this.addRoute({
+      path: '/',
+      method: HttpMethod.Post,
+      handler: this.create,
+      middlewares: [new ValidateDtoMiddleware(CreateOfferDto)],
+    });
 
     this.addRoute({
       path: '/premium',
@@ -64,7 +76,10 @@ export class OfferController extends BaseController {
       path: '/:offerId',
       method: HttpMethod.Patch,
       handler: this.updateById,
-      middlewares: [new ValidateObjectIdMiddleware('offerId')],
+      middlewares: [
+        new ValidateObjectIdMiddleware('offerId'),
+        new ValidateDtoMiddleware(UpdateOfferDto),
+      ],
     });
     this.addRoute({
       path: '/:offerId',
@@ -83,7 +98,10 @@ export class OfferController extends BaseController {
       path: '/:offerId/comments',
       method: HttpMethod.Post,
       handler: this.createComment,
-      middlewares: [new ValidateObjectIdMiddleware('offerId')],
+      middlewares: [
+        new ValidateObjectIdMiddleware('offerId'),
+        new ValidateDtoMiddleware(CreateCommentDto),
+      ],
     });
   }
 
@@ -144,7 +162,6 @@ export class OfferController extends BaseController {
     const comments = await this.commentService.create({
       ...body,
       offer: <string>params['offerId'],
-      user: '6648db24acb6eef6c576c362',
     });
     const response = fillDTO(CommentRdo, comments);
 
