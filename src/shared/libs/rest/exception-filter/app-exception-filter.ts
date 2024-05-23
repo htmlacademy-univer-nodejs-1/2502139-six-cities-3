@@ -21,9 +21,9 @@ export class AppExceptionFilter implements ExceptionFilter {
   ) {
     this.logger.error(
       error,
-      `[${error.detail}]: ${error.httpStatusCode} — ${error.message}`
+      `[${error.httpStatusCode}]: ${error.message} ${error.detail}`
     );
-    res.status(error.httpStatusCode).json(createErrorObject(error.message, error.detail || []));
+    res.status(error.httpStatusCode).json(createErrorObject(error.message, error.detail));
   }
 
   private handleOtherError(

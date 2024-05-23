@@ -1,6 +1,10 @@
 import { inject, injectable } from 'inversify';
 import { Request, Response } from 'express';
-import { BaseController, HttpMethod } from '../../libs/rest/index.js';
+import {
+  BaseController,
+  HttpMethod,
+  ValidateObjectIdMiddleware,
+} from '../../libs/rest/index.js';
 import { Logger } from '../../libs/logger/index.js';
 import { Component } from '../../types/index.js';
 import { OfferService } from './offer-service.interface.js';
@@ -42,11 +46,13 @@ export class OfferController extends BaseController {
       path: '/favorites/:offerId',
       method: HttpMethod.Post,
       handler: this.addToFavorite,
+      middlewares: [new ValidateObjectIdMiddleware('offerId')],
     });
     this.addRoute({
       path: '/favorites/:offerId',
       method: HttpMethod.Delete,
       handler: this.removeFromFavorite,
+      middlewares: [new ValidateObjectIdMiddleware('offerId')],
     });
 
     this.addRoute({
@@ -58,25 +64,27 @@ export class OfferController extends BaseController {
       path: '/:offerId',
       method: HttpMethod.Patch,
       handler: this.updateById,
+      middlewares: [new ValidateObjectIdMiddleware('offerId')],
     });
     this.addRoute({
       path: '/:offerId',
       method: HttpMethod.Delete,
       handler: this.deleteById,
+      middlewares: [new ValidateObjectIdMiddleware('offerId')],
     });
 
     this.addRoute({
       path: '/:offerId/comments',
       method: HttpMethod.Get,
       handler: this.findComments,
+      middlewares: [new ValidateObjectIdMiddleware('offerId')],
     });
     this.addRoute({
       path: '/:offerId/comments',
       method: HttpMethod.Post,
       handler: this.postComment,
+      middlewares: [new ValidateObjectIdMiddleware('offerId')],
     });
-
-
   }
 
   public async index(_req: Request, res: Response): Promise<void> {
@@ -149,18 +157,24 @@ export class OfferController extends BaseController {
     this.ok(res, response);
   }
 
-  public async addToFavorite({params}: Request, res: Response): Promise<void> {
+  public async addToFavorite(
+    { params }: Request,
+    res: Response
+  ): Promise<void> {
     const offers = await this.offerService.updateById(params['offerId'], {
-      isFavorite: true
+      isFavorite: true,
     });
     const response = fillDTO(OfferRdo, offers);
 
     this.ok(res, response);
   }
 
-  public async removeFromFavorite({params}: Request, res: Response): Promise<void> {
+  public async removeFromFavorite(
+    { params }: Request,
+    res: Response
+  ): Promise<void> {
     const offers = await this.offerService.updateById(params['offerId'], {
-      isFavorite: false
+      isFavorite: false,
     });
     const response = fillDTO(OfferRdo, offers);
 
