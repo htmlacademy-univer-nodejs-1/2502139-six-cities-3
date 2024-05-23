@@ -48,9 +48,7 @@ export const createOffer = (offerData: string): Offer => {
       type: userType as UserType,
     },
     commentsCount: Number(commentsCount),
-    location: {
-      latitude: Number(latitude),
-      longitude: Number(longitude),
-    },
+    latitude: Number(latitude),
+    longitude: Number(longitude),
   };
 };

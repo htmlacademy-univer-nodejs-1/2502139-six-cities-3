@@ -1,6 +1,11 @@
 import { inject, injectable } from 'inversify';
 import { Request, Response } from 'express';
-import { BaseController, HttpMethod } from '../../libs/rest/index.js';
+import {
+  BaseController,
+  HttpMethod,
+  ValidateDtoMiddleware,
+  ValidateObjectIdMiddleware,
+} from '../../libs/rest/index.js';
 import { Logger } from '../../libs/logger/index.js';
 import { Component } from '../../types/index.js';
 import { OfferService } from './offer-service.interface.js';
@@ -11,7 +16,13 @@ import {
   CreateOfferRequest,
   UpdateOfferRequest,
 } from './offer-requests.type.js';
-import { CommentRdo, CommentService } from '../comment/index.js';
+import {
+  CommentRdo,
+  CommentService,
+  CreateCommentDto,
+} from '../comment/index.js';
+import { CreateOfferDto } from './dto/create-offer.dto.js';
+import { UpdateOfferDto } from './dto/update-offer.dto.js';
 
 @injectable()
 export class OfferController extends BaseController {
@@ -26,61 +37,77 @@ export class OfferController extends BaseController {
     this.logger.info('Регистрация путей для контроллера предложений');
 
     this.addRoute({ path: '/', method: HttpMethod.Get, handler: this.index });
-    this.addRoute({ path: '/', method: HttpMethod.Post, handler: this.create });
+    this.addRoute({
+      path: '/',
+      method: HttpMethod.Post,
+      handler: this.create,
+      middlewares: [new ValidateDtoMiddleware(CreateOfferDto)],
+    });
 
     this.addRoute({
       path: '/premium',
       method: HttpMethod.Get,
-      handler: this.getPremium,
+      handler: this.indexPremium,
     });
     this.addRoute({
       path: '/favorites',
       method: HttpMethod.Get,
-      handler: this.getFavorites,
+      handler: this.indexFavorite,
     });
     this.addRoute({
       path: '/favorites/:offerId',
       method: HttpMethod.Post,
-      handler: this.addToFavorite,
+      handler: this.updateFavorite,
+      middlewares: [new ValidateObjectIdMiddleware('offerId')],
     });
     this.addRoute({
       path: '/favorites/:offerId',
       method: HttpMethod.Delete,
-      handler: this.removeFromFavorite,
+      handler: this.deleteFavorite,
+      middlewares: [new ValidateObjectIdMiddleware('offerId')],
     });
 
     this.addRoute({
       path: '/:offerId',
       method: HttpMethod.Get,
-      handler: this.findById,
+      handler: this.showById,
     });
     this.addRoute({
       path: '/:offerId',
       method: HttpMethod.Patch,
       handler: this.updateById,
+      middlewares: [
+        new ValidateObjectIdMiddleware('offerId'),
+        new ValidateDtoMiddleware(UpdateOfferDto),
+      ],
     });
     this.addRoute({
       path: '/:offerId',
       method: HttpMethod.Delete,
       handler: this.deleteById,
+      middlewares: [new ValidateObjectIdMiddleware('offerId')],
     });
 
     this.addRoute({
       path: '/:offerId/comments',
       method: HttpMethod.Get,
-      handler: this.findComments,
+      handler: this.indexComments,
+      middlewares: [new ValidateObjectIdMiddleware('offerId')],
     });
     this.addRoute({
       path: '/:offerId/comments',
       method: HttpMethod.Post,
-      handler: this.postComment,
+      handler: this.createComment,
+      middlewares: [
+        new ValidateObjectIdMiddleware('offerId'),
+        new ValidateDtoMiddleware(CreateCommentDto),
+      ],
     });
-
-
   }
 
   public async index(_req: Request, res: Response): Promise<void> {
-    const offers = await this.offerService.find();
+    const limit = Number(_req.query.limit) || undefined;
+    const offers = await this.offerService.find(limit);
     const response = fillDTO(OfferRdo, offers);
 
     this.ok(res, response);
@@ -93,7 +120,7 @@ export class OfferController extends BaseController {
     this.created(_res, response);
   }
 
-  public async findById({ params }: Request, _res: Response): Promise<void> {
+  public async showById({ params }: Request, _res: Response): Promise<void> {
     const offer = await this.offerService.findById(params['offerId']);
     const response = fillDTO(OfferRdo, offer);
 
@@ -120,7 +147,7 @@ export class OfferController extends BaseController {
     this.noContent(_res, null);
   }
 
-  public async findComments(_req: Request, _res: Response): Promise<void> {
+  public async indexComments(_req: Request, _res: Response): Promise<void> {
     const comments =
       (await this.commentService.findByOfferId(_req.params['offerId'])) || [];
     const response = fillDTO(CommentRdo, comments);
@@ -128,46 +155,51 @@ export class OfferController extends BaseController {
     this.ok(_res, response);
   }
 
-  public async postComment(
+  public async createComment(
     { params, body }: CreateOfferCommentRequest,
     _res: Response
   ): Promise<void> {
     const comments = await this.commentService.create({
       ...body,
       offer: <string>params['offerId'],
-      user: '6648db24acb6eef6c576c362',
     });
     const response = fillDTO(CommentRdo, comments);
 
     this.ok(_res, response);
   }
 
-  public async getFavorites(_req: Request, res: Response): Promise<void> {
+  public async indexFavorite(_req: Request, res: Response): Promise<void> {
     const offers = await this.offerService.findFavorite();
     const response = fillDTO(OfferRdo, offers);
 
     this.ok(res, response);
   }
 
-  public async addToFavorite({params}: Request, res: Response): Promise<void> {
+  public async updateFavorite(
+    { params }: Request,
+    res: Response
+  ): Promise<void> {
     const offers = await this.offerService.updateById(params['offerId'], {
-      isFavorite: true
+      isFavorite: true,
     });
     const response = fillDTO(OfferRdo, offers);
 
     this.ok(res, response);
   }
 
-  public async removeFromFavorite({params}: Request, res: Response): Promise<void> {
+  public async deleteFavorite(
+    { params }: Request,
+    res: Response
+  ): Promise<void> {
     const offers = await this.offerService.updateById(params['offerId'], {
-      isFavorite: false
+      isFavorite: false,
     });
     const response = fillDTO(OfferRdo, offers);
 
     this.ok(res, response);
   }
 
-  public async getPremium(_req: Request, res: Response): Promise<void> {
+  public async indexPremium(_req: Request, res: Response): Promise<void> {
     const offers = await this.offerService.findPremium();
     const response = fillDTO(OfferRdo, offers);
 

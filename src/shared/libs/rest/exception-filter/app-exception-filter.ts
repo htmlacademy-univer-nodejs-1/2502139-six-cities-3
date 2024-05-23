@@ -6,6 +6,7 @@ import { Logger } from '../../logger/index.js';
 import { Component } from '../../../types/index.js';
 import { HttpError } from '../errors/http-error.js';
 import { createErrorObject } from '../../../helpers/createErrorObject.js';
+import { ValidationError } from '../errors/validation-error.js';
 
 @injectable()
 export class AppExceptionFilter implements ExceptionFilter {
@@ -21,9 +22,22 @@ export class AppExceptionFilter implements ExceptionFilter {
   ) {
     this.logger.error(
       error,
-      `[${error.detail}]: ${error.httpStatusCode} — ${error.message}`
+      `[${error.httpStatusCode}]: ${error.message} ${error.detail}`
     );
-    res.status(error.httpStatusCode).json(createErrorObject(error.message, error.detail || []));
+    res.status(error.httpStatusCode).json(createErrorObject(error.message, error.detail));
+  }
+
+  private handleValidationError(
+    error: ValidationError,
+    _req: Request,
+    res: Response,
+    _next: NextFunction
+  ) {
+    this.logger.error(
+      error,
+      `[${error.httpStatusCode}]: ${error.message} ${error.details}`
+    );
+    res.status(error.httpStatusCode).json(createErrorObject(error.message, error.details?.map((e) => ({property: e.property, message: Object.values(e.constraints || {})[0]}))));
   }
 
   private handleOtherError(
@@ -46,6 +60,10 @@ export class AppExceptionFilter implements ExceptionFilter {
   ): void {
     if (error instanceof HttpError) {
       return this.handleHttpError(error, req, res, next);
+    }
+
+    if (error instanceof ValidationError) {
+      return this.handleValidationError(error, req, res, next);
     }
 
     this.handleOtherError(error, req, res, next);
