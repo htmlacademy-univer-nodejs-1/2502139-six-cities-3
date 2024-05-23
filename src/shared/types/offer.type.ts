@@ -1,6 +1,5 @@
-import { OfferType } from './offer-type.enum';
 import { OfferGood as OfferGood } from './offer-good.enum';
-import { Coordinates } from './coordinates.type';
+import { OfferType } from './offer-type.enum';
 import { User } from './user.type';
 import { City } from './city.enum';
 
@@ -14,12 +13,13 @@ export type Offer = {
   isPremium: boolean,
   isFavorite: boolean,
   rating: number,
+  price: number,
   type: OfferType,
   bedrooms: number,
   maxAdults: number,
-  price: number,
   goods: OfferGood[],
   host: User,
   commentsCount: number,
-  location: Coordinates
+  latitude: number,
+  longitude: number,
 }

@@ -1,12 +1,16 @@
-import { inject, injectable } from 'inversify';
-import { OfferService } from './offer-service.interface.js';
-import { Component, SortType } from '../../types/index.js';
-import { Logger } from '../../libs/logger/index.js';
 import { DocumentType, types } from '@typegoose/typegoose';
-import { OfferEntity } from './offer.entity.js';
-import { CreateOfferDto } from './dto/create-offer.dto.js';
+import { Component, SortType } from '../../types/index.js';
+import { inject, injectable } from 'inversify';
 import { UpdateOfferDto } from './dto/update-offer.dto.js';
+import { CreateOfferDto } from './dto/create-offer.dto.js';
 import { CommentEntity } from '../comment/index.js';
+import { OfferService } from './offer-service.interface.js';
+import { OfferEntity } from './offer.entity.js';
+import { Logger } from '../../libs/logger/index.js';
+import {
+  DEFAULT_OFFER_COUNT,
+  DEFAULT_PREMIUM_OFFER_COUNT,
+} from './offer.constant.js';
 
 @injectable()
 export class DefaultOfferService implements OfferService {
@@ -19,21 +23,7 @@ export class DefaultOfferService implements OfferService {
   ) {}
 
   public async create(dto: CreateOfferDto): Promise<DocumentType<OfferEntity>> {
-    const {
-      city: { name: city },
-      location: { latitude, longitude },
-      ...rest
-    } = dto;
-
-    const result = (
-      await this.offerModel.create({
-        ...rest,
-        latitude,
-        longitude,
-        city,
-        host: '6648db24acb6eef6c576c362',
-      })
-    ).populate(['host']);
+    const result = (await this.offerModel.create(dto)).populate(['host']);
     this.logger.info(`Создан новый оффер: ${dto.title}`);
 
     return result;
@@ -45,8 +35,13 @@ export class DefaultOfferService implements OfferService {
     return this.offerModel.findById(offerId).populate(['host']).exec();
   }
 
-  public async find(): Promise<DocumentType<OfferEntity>[]> {
-    return this.offerModel.find().populate(['host']).exec();
+  public async find(limit?: number): Promise<DocumentType<OfferEntity>[]> {
+    return this.offerModel
+      .find()
+      .sort({ publicationDate: SortType.Down })
+      .limit(limit || DEFAULT_OFFER_COUNT)
+      .populate(['host'])
+      .exec();
   }
 
   public async deleteById(
@@ -59,25 +54,14 @@ export class DefaultOfferService implements OfferService {
     offerId: string,
     dto: UpdateOfferDto
   ): Promise<DocumentType<OfferEntity> | null> {
-    const { city, location, ...rest } = dto;
-
     return this.offerModel
-      .findByIdAndUpdate(
-        offerId,
-        {
-          ...rest,
-          city: city?.name,
-          latitude: location?.latitude,
-          longitude: location?.longitude,
-        },
-        { new: true }
-      )
+      .findByIdAndUpdate(offerId, dto, { new: true })
       .populate(['host'])
       .exec();
   }
 
-  public async exists(documentId: string): Promise<boolean> {
-    return (await this.offerModel.exists({ _id: documentId })) !== null;
+  public async exists(offerId: string): Promise<boolean> {
+    return (await this.offerModel.exists({ _id: offerId })) !== null;
   }
 
   public async incCommentCount(
@@ -106,26 +90,6 @@ export class DefaultOfferService implements OfferService {
       .exec();
   }
 
-  public async findNew(count: number): Promise<DocumentType<OfferEntity>[]> {
-    return this.offerModel
-      .find()
-      .sort({ createdAt: SortType.Down })
-      .limit(count)
-      .populate(['host'])
-      .exec();
-  }
-
-  public async findDiscussed(
-    count: number
-  ): Promise<DocumentType<OfferEntity>[]> {
-    return this.offerModel
-      .find()
-      .sort({ commentsCount: SortType.Down })
-      .limit(count)
-      .populate(['host', 'categories'])
-      .exec();
-  }
-
   public async updateRating(
     offerId: string
   ): Promise<DocumentType<OfferEntity> | null> {
@@ -147,7 +111,14 @@ export class DefaultOfferService implements OfferService {
     return this.offerModel.find().populate(['host']).exec();
   }
 
-  public async findPremium(): Promise<DocumentType<OfferEntity>[]> {
-    return this.offerModel.find().populate(['host']).exec();
+  public async findPremium(
+    limit?: number
+  ): Promise<DocumentType<OfferEntity>[]> {
+    return this.offerModel
+      .find()
+      .sort({ publicationDate: SortType.Down })
+      .limit(limit || DEFAULT_PREMIUM_OFFER_COUNT)
+      .populate(['host'])
+      .exec();
   }
 }

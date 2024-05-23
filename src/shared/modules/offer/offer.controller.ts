@@ -35,30 +35,30 @@ export class OfferController extends BaseController {
     this.addRoute({
       path: '/premium',
       method: HttpMethod.Get,
-      handler: this.getPremium,
+      handler: this.indexPremium,
     });
     this.addRoute({
       path: '/favorites',
       method: HttpMethod.Get,
-      handler: this.getFavorites,
+      handler: this.indexFavorite,
     });
     this.addRoute({
       path: '/favorites/:offerId',
       method: HttpMethod.Post,
-      handler: this.addToFavorite,
+      handler: this.updateFavorite,
       middlewares: [new ValidateObjectIdMiddleware('offerId')],
     });
     this.addRoute({
       path: '/favorites/:offerId',
       method: HttpMethod.Delete,
-      handler: this.removeFromFavorite,
+      handler: this.deleteFavorite,
       middlewares: [new ValidateObjectIdMiddleware('offerId')],
     });
 
     this.addRoute({
       path: '/:offerId',
       method: HttpMethod.Get,
-      handler: this.findById,
+      handler: this.showById,
     });
     this.addRoute({
       path: '/:offerId',
@@ -76,19 +76,20 @@ export class OfferController extends BaseController {
     this.addRoute({
       path: '/:offerId/comments',
       method: HttpMethod.Get,
-      handler: this.findComments,
+      handler: this.indexComments,
       middlewares: [new ValidateObjectIdMiddleware('offerId')],
     });
     this.addRoute({
       path: '/:offerId/comments',
       method: HttpMethod.Post,
-      handler: this.postComment,
+      handler: this.createComment,
       middlewares: [new ValidateObjectIdMiddleware('offerId')],
     });
   }
 
   public async index(_req: Request, res: Response): Promise<void> {
-    const offers = await this.offerService.find();
+    const limit = Number(_req.query.limit) || undefined;
+    const offers = await this.offerService.find(limit);
     const response = fillDTO(OfferRdo, offers);
 
     this.ok(res, response);
@@ -101,7 +102,7 @@ export class OfferController extends BaseController {
     this.created(_res, response);
   }
 
-  public async findById({ params }: Request, _res: Response): Promise<void> {
+  public async showById({ params }: Request, _res: Response): Promise<void> {
     const offer = await this.offerService.findById(params['offerId']);
     const response = fillDTO(OfferRdo, offer);
 
@@ -128,7 +129,7 @@ export class OfferController extends BaseController {
     this.noContent(_res, null);
   }
 
-  public async findComments(_req: Request, _res: Response): Promise<void> {
+  public async indexComments(_req: Request, _res: Response): Promise<void> {
     const comments =
       (await this.commentService.findByOfferId(_req.params['offerId'])) || [];
     const response = fillDTO(CommentRdo, comments);
@@ -136,7 +137,7 @@ export class OfferController extends BaseController {
     this.ok(_res, response);
   }
 
-  public async postComment(
+  public async createComment(
     { params, body }: CreateOfferCommentRequest,
     _res: Response
   ): Promise<void> {
@@ -150,14 +151,14 @@ export class OfferController extends BaseController {
     this.ok(_res, response);
   }
 
-  public async getFavorites(_req: Request, res: Response): Promise<void> {
+  public async indexFavorite(_req: Request, res: Response): Promise<void> {
     const offers = await this.offerService.findFavorite();
     const response = fillDTO(OfferRdo, offers);
 
     this.ok(res, response);
   }
 
-  public async addToFavorite(
+  public async updateFavorite(
     { params }: Request,
     res: Response
   ): Promise<void> {
@@ -169,7 +170,7 @@ export class OfferController extends BaseController {
     this.ok(res, response);
   }
 
-  public async removeFromFavorite(
+  public async deleteFavorite(
     { params }: Request,
     res: Response
   ): Promise<void> {
@@ -181,7 +182,7 @@ export class OfferController extends BaseController {
     this.ok(res, response);
   }
 
-  public async getPremium(_req: Request, res: Response): Promise<void> {
+  public async indexPremium(_req: Request, res: Response): Promise<void> {
     const offers = await this.offerService.findPremium();
     const response = fillDTO(OfferRdo, offers);
 
