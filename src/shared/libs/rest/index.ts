@@ -7,3 +7,4 @@ export * from './exception-filter/app-exception-filter.js';
 export * from './types/request.params.type.js';
 export * from './types/request-body.type.js';
 export * from './errors/http-error.js';
+export * from './middleware/middleware.interface.js';
