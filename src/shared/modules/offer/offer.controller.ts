@@ -3,7 +3,9 @@ import { Request, Response } from 'express';
 import {
   BaseController,
   DocumentExistsMiddleware,
+  HttpError,
   HttpMethod,
+  PrivateRouteMiddleware,
   ValidateDtoMiddleware,
   ValidateObjectIdMiddleware,
 } from '../../libs/rest/index.js';
@@ -24,6 +26,7 @@ import {
 } from '../comment/index.js';
 import { CreateOfferDto } from './dto/create-offer.dto.js';
 import { UpdateOfferDto } from './dto/update-offer.dto.js';
+import { StatusCodes } from 'http-status-codes';
 
 @injectable()
 export class OfferController extends BaseController {
@@ -42,7 +45,10 @@ export class OfferController extends BaseController {
       path: '/',
       method: HttpMethod.Post,
       handler: this.create,
-      middlewares: [new ValidateDtoMiddleware(CreateOfferDto)],
+      middlewares: [
+        new ValidateDtoMiddleware(CreateOfferDto),
+        new PrivateRouteMiddleware(),
+      ],
     });
 
     this.addRoute({
@@ -87,6 +93,7 @@ export class OfferController extends BaseController {
       method: HttpMethod.Patch,
       handler: this.updateById,
       middlewares: [
+        new PrivateRouteMiddleware(),
         new ValidateObjectIdMiddleware('offerId'),
         new ValidateDtoMiddleware(UpdateOfferDto),
         new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),
@@ -97,6 +104,7 @@ export class OfferController extends BaseController {
       method: HttpMethod.Delete,
       handler: this.deleteById,
       middlewares: [
+        new PrivateRouteMiddleware(),
         new ValidateObjectIdMiddleware('offerId'),
         new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),
       ],
@@ -116,6 +124,7 @@ export class OfferController extends BaseController {
       method: HttpMethod.Post,
       handler: this.createComment,
       middlewares: [
+        new PrivateRouteMiddleware(),
         new ValidateObjectIdMiddleware('offerId'),
         new ValidateDtoMiddleware(CreateCommentDto),
         new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),
@@ -132,7 +141,10 @@ export class OfferController extends BaseController {
   }
 
   public async create(_req: CreateOfferRequest, _res: Response): Promise<void> {
-    const offer = await this.offerService.create(_req.body);
+    const offer = await this.offerService.create({
+      ..._req.body,
+      host: _req.tokenPayload.id,
+    });
     const response = fillDTO(OfferRdo, offer);
 
     this.created(_res, response);
@@ -146,21 +158,32 @@ export class OfferController extends BaseController {
   }
 
   public async updateById(
-    { body, params }: UpdateOfferRequest,
+    { body, params, tokenPayload }: UpdateOfferRequest,
     _res: Response
   ): Promise<void> {
-    const offer = await this.offerService.updateById(
-      <string>params['offerId'],
-      body
-    );
+    const offerId = <string>params['offerId'];
+    const oldOffer = await this.offerService.findById(offerId);
+
+    if (oldOffer?.host.id !== tokenPayload.id) {
+      throw new HttpError(StatusCodes.FORBIDDEN, 'Forbidden');
+    }
+
+    const offer = await this.offerService.updateById(offerId, body);
     const response = fillDTO(OfferRdo, offer);
 
     this.created(_res, response);
   }
 
-  public async deleteById({ params }: Request, _res: Response): Promise<void> {
-    await this.offerService.deleteById(<string>params['offerId']);
-    await this.commentService.deleteByOfferId(<string>params['offerId']);
+  public async deleteById({ params, tokenPayload }: Request, _res: Response): Promise<void> {
+    const offerId = <string>params['offerId'];
+    const oldOffer = await this.offerService.findById(offerId);
+
+    if (oldOffer?.host.id !== tokenPayload.id) {
+      throw new HttpError(StatusCodes.FORBIDDEN, 'Forbidden');
+    }
+
+    await this.offerService.deleteById(offerId);
+    await this.commentService.deleteByOfferId(offerId);
 
     this.noContent(_res, null);
   }
@@ -174,11 +197,12 @@ export class OfferController extends BaseController {
   }
 
   public async createComment(
-    { params, body }: CreateOfferCommentRequest,
+    { params, body, tokenPayload }: CreateOfferCommentRequest,
     _res: Response
   ): Promise<void> {
     const comments = await this.commentService.create({
       ...body,
+      user: tokenPayload.id,
       offer: <string>params['offerId'],
     });
     const response = fillDTO(CommentRdo, comments);

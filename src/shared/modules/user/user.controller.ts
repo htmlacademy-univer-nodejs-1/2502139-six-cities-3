@@ -3,6 +3,7 @@ import {
   BaseController,
   HttpError,
   HttpMethod,
+  PrivateRouteMiddleware,
   UploadFileMiddleware,
   ValidateDtoMiddleware,
 } from '../../libs/rest/index.js';
@@ -15,7 +16,6 @@ import { fillDTO } from '../../helpers/fillDTO.js';
 import { UserRdo } from './rdo/user.rdo.js';
 import { Request, Response } from 'express';
 import { CreateUserDto } from './dto/create-user.dto.js';
-import { CheckUserDto } from './dto/check-user.dto.js';
 import { LoginUserDto } from './dto/login-user.dto.js';
 import { Config, RestSchema } from '../../libs/config/index.js';
 import { AuthService } from '../auth/index.js';
@@ -37,7 +37,9 @@ export class UserController extends BaseController {
       path: '/login',
       method: HttpMethod.Get,
       handler: this.checkAuth,
-      middlewares: [new ValidateDtoMiddleware(CheckUserDto)],
+      middlewares: [
+        new PrivateRouteMiddleware()
+      ]
     });
     this.addRoute({
       path: '/login',
@@ -70,10 +72,10 @@ export class UserController extends BaseController {
   }
 
   public async checkAuth(
-    { body: { email } }: CheckUserRequest,
+    { tokenPayload }: CheckUserRequest,
     res: Response
   ): Promise<void> {
-    const existingUser = await this.userService.findByEmail(email);
+    const existingUser = await this.userService.findByEmail(tokenPayload.email);
 
     if (!existingUser) {
       throw new HttpError(StatusCodes.UNAUTHORIZED, 'Unauthorized');
@@ -91,7 +93,7 @@ export class UserController extends BaseController {
     const responseData = fillDTO(LoggedUserRdo, {
       token,
     });
-    _res.cookie('token', token);
+    _res.cookie('Authorization', `Bearer ${token}`);
     this.ok(_res, responseData);
   }
 

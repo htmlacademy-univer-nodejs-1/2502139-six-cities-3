@@ -1,4 +1,4 @@
-import { IsMongoId, IsNumber, Max, MaxLength, Min, MinLength } from 'class-validator';
+import { IsNumber, Max, MaxLength, Min, MinLength } from 'class-validator';
 import { CommentValidationMessage } from './comment.messages.js';
 
 export class CreateCommentDto {
@@ -14,7 +14,7 @@ export class CreateCommentDto {
   @Max(5, { message: CommentValidationMessage.rating.invalidDecimal })
   public rating: number;
 
-  @IsMongoId()
+  // @IsMongoId()
   public user: string;
 
   public offer: string;
