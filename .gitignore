@@ -12,3 +12,5 @@ coverage
 *.env
 *.tsv
 frontend-six-cities
+
+/upload/
