@@ -16,7 +16,7 @@ export class UserEntity extends defaultClasses.TimeStamps {
   @prop({ required: true, type: String, unique: true })
   public email: string;
 
-  @prop({ required: false, type: String })
+  @prop({ required: false, type: String, default: () => 'https://api.multiavatar.com/kathrin.svg' })
   public avatarUrl?: string;
 
   @prop({ required: true, type: String })
@@ -40,6 +40,11 @@ export class UserEntity extends defaultClasses.TimeStamps {
 
   public getPassword() {
     return this.password;
+  }
+
+  public verifyPassword(password: string, salt: string) {
+    const hashPassword = createSHA256(password, salt);
+    return hashPassword === this.password;
   }
 }
 
