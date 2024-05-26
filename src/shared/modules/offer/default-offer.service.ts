@@ -11,6 +11,7 @@ import {
   DEFAULT_OFFER_COUNT,
   DEFAULT_PREMIUM_OFFER_COUNT,
 } from './offer.constant.js';
+import mongoose from 'mongoose';
 
 @injectable()
 export class DefaultOfferService implements OfferService {
@@ -35,13 +36,65 @@ export class DefaultOfferService implements OfferService {
     return this.offerModel.findById(offerId).populate(['host']).exec();
   }
 
-  public async find(limit?: number): Promise<DocumentType<OfferEntity>[]> {
-    return this.offerModel
-      .find()
-      .sort({ publicationDate: SortType.Down })
-      .limit(limit || DEFAULT_OFFER_COUNT)
-      .populate(['host'])
-      .exec();
+  public async find(
+    limit?: number,
+    userId?: string
+  ): Promise<DocumentType<OfferEntity>[]> {
+    return (
+      this.offerModel
+        .aggregate([
+          {
+            $lookup: {
+              let: {
+                offerId: '$_id',
+              },
+              from: 'favorites',
+              as: 'favs',
+              pipeline: [
+                {
+                  $match: {
+                    $expr: {
+                      $eq: ['$offer', '$$offerId'],
+                    },
+                  },
+                },
+                {
+                  $match: {
+                    $expr: {
+                      $eq: ['$user', new mongoose.Types.ObjectId(userId)],
+                    },
+                  },
+                },
+              ],
+            },
+          },
+          { $lookup: {
+            from: 'users',
+            as: 'host',
+            localField: 'host',
+            foreignField: '_id',
+          } },
+          { $unwind: { path: '$favs', preserveNullAndEmptyArrays: true } },
+          { $unwind: { path: '$host', preserveNullAndEmptyArrays: true } },
+          {
+            $set: {
+              isFavorite: {
+                $cond: {
+                  if: {
+                    $lte: ['$favs', null],
+                  },
+                  then: false,
+                  else: true,
+                },
+              },
+            },
+          },
+          { $project: { favs: 0 }},
+          { $limit: limit || DEFAULT_OFFER_COUNT}
+        ])
+        .sort({ publicationDate: SortType.Down })
+        .exec()
+    );
   }
 
   public async deleteById(

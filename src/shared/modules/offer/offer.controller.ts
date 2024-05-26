@@ -56,29 +56,6 @@ export class OfferController extends BaseController {
       method: HttpMethod.Get,
       handler: this.indexPremium,
     });
-    this.addRoute({
-      path: '/favorites',
-      method: HttpMethod.Get,
-      handler: this.indexFavorite,
-    });
-    this.addRoute({
-      path: '/favorites/:offerId',
-      method: HttpMethod.Post,
-      handler: this.updateFavorite,
-      middlewares: [
-        new ValidateObjectIdMiddleware('offerId'),
-        new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),
-      ],
-    });
-    this.addRoute({
-      path: '/favorites/:offerId',
-      method: HttpMethod.Delete,
-      handler: this.deleteFavorite,
-      middlewares: [
-        new ValidateObjectIdMiddleware('offerId'),
-        new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),
-      ],
-    });
 
     this.addRoute({
       path: '/:offerId',
@@ -133,8 +110,9 @@ export class OfferController extends BaseController {
   }
 
   public async index(_req: Request, res: Response): Promise<void> {
+    const tokenPayload = _req.tokenPayload || null;
     const limit = Number(_req.query.limit) || undefined;
-    const offers = await this.offerService.find(limit);
+    const offers = await this.offerService.find(limit, tokenPayload?.id);
     const response = fillDTO(OfferRdo, offers);
 
     this.ok(res, response);
@@ -208,37 +186,6 @@ export class OfferController extends BaseController {
     const response = fillDTO(CommentRdo, comments);
 
     this.ok(_res, response);
-  }
-
-  public async indexFavorite(_req: Request, res: Response): Promise<void> {
-    const offers = await this.offerService.findFavorite();
-    const response = fillDTO(OfferRdo, offers);
-
-    this.ok(res, response);
-  }
-
-  public async updateFavorite(
-    { params }: Request,
-    res: Response
-  ): Promise<void> {
-    const offers = await this.offerService.updateById(params['offerId'], {
-      isFavorite: true,
-    });
-    const response = fillDTO(OfferRdo, offers);
-
-    this.ok(res, response);
-  }
-
-  public async deleteFavorite(
-    { params }: Request,
-    res: Response
-  ): Promise<void> {
-    const offers = await this.offerService.updateById(params['offerId'], {
-      isFavorite: false,
-    });
-    const response = fillDTO(OfferRdo, offers);
-
-    this.ok(res, response);
   }
 
   public async indexPremium(_req: Request, res: Response): Promise<void> {
