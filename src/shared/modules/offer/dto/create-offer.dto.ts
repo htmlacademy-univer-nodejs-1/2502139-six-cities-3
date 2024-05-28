@@ -6,7 +6,6 @@ import {
   IsEnum,
   IsLatitude,
   IsLongitude,
-  IsMongoId,
   IsNumber,
   IsUrl,
   Max,
@@ -108,7 +107,7 @@ export class CreateOfferDto {
   })
   public goods: OfferGood[];
 
-  @IsMongoId({})
+  // @IsMongoId({})
   public host: string;
 
   @IsLatitude({ message: OfferValidationMessage.latitude.invalid })

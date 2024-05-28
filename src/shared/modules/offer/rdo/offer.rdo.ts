@@ -1,9 +1,15 @@
 import { Expose, Transform, Type } from 'class-transformer';
-import { City, Coordinates, OfferGood, OfferType } from '../../../types/index.js';
+import {
+  City,
+  Coordinates,
+  OfferGood,
+  OfferType,
+} from '../../../types/index.js';
 import { UserRdo } from '../../user/index.js';
 
 export class OfferRdo {
-  @Expose()
+  @Expose({ name: '_id' })
+  @Transform(({obj}) => obj._id.toString())
   public id: string;
 
   @Expose()
@@ -22,15 +28,15 @@ export class OfferRdo {
   public isFavorite: boolean;
 
   @Expose()
-  @Transform(({obj, value}) => {
-    const {latitude, longitude} = obj;
+  @Transform(({ obj, value }) => {
+    const { latitude, longitude } = obj;
 
     const result = {
       name: value,
       location: {
         latitude,
-        longitude
-      }
+        longitude,
+      },
     };
 
     return result;
@@ -38,12 +44,12 @@ export class OfferRdo {
   public city: City;
 
   @Expose()
-  @Transform(({obj}) => {
-    const {latitude, longitude} = obj;
+  @Transform(({ obj }) => {
+    const { latitude, longitude } = obj;
 
     return {
       latitude,
-      longitude
+      longitude,
     };
   })
   public location: Coordinates;
@@ -72,4 +78,7 @@ export class OfferRdo {
 
   @Expose()
   public maxAdults: number;
+
+  @Expose()
+  public publicationDate: Date;
 }
