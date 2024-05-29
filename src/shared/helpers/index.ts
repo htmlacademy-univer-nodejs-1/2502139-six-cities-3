@@ -8,3 +8,4 @@ export * from './createSHA256.js';
 export * from './fillDTO.js';
 export * from './createErrorObject.js';
 export * from './reduceValidationErrors.js';
+export * from './getFullServerPath.js';
