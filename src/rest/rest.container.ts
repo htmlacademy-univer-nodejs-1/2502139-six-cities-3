@@ -11,6 +11,7 @@ import {
   AppExceptionFilter,
   ExceptionFilter,
   HttpErrorExceptionFilter,
+  PathTransformer,
   ValidationExceptionFilter,
 } from '../shared/libs/rest/index.js';
 
@@ -45,6 +46,7 @@ export function createRestApplicationContainer() {
     .bind<ExceptionFilter>(Component.ValidationExceptionFilter)
     .to(ValidationExceptionFilter)
     .inSingletonScope();
+  restApplicationContainer.bind<PathTransformer>(Component.PathTransformer).to(PathTransformer).inSingletonScope();
 
   return restApplicationContainer;
 }
