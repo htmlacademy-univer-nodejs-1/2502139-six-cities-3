@@ -108,6 +108,7 @@ export class DefaultFavoriteService implements FavoriteService {
     }
 
     await this.favoriteModel.deleteOne(dto);
+    offer.isFavorite = false;
 
     return offer;
   }

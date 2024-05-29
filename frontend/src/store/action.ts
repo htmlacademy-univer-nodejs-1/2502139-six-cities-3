@@ -191,10 +191,11 @@ export const loginUser = createAsyncThunk<
 export const logoutUser = createAsyncThunk<void, undefined, { extra: Extra }>(
   Action.LOGOUT_USER,
   async (_, { extra }) => {
-    const { api } = extra;
-    await api.delete(ApiRoute.Logout);
+    const { history } = extra;
+    // await api.delete(ApiRoute.Logout);
 
     Token.drop();
+    history.go(0);
   }
 );
 
@@ -245,11 +246,19 @@ export const postFavorite = createAsyncThunk<
   const { api, history } = extra;
 
   try {
-    const { data } = await api.post<Offer>(
-      `${ApiRoute.Favorite}/${id}/${status}`
-    );
+    if (status === 0) {
+      const { data } = await api.delete<Offer>(
+        `${ApiRoute.Favorite}/${id}`
+      );
 
-    return data;
+      return data;
+    } else {
+      const { data } = await api.post<Offer>(
+        `${ApiRoute.Favorite}/${id}`
+      );
+
+      return data;
+    }
   } catch (error) {
     const axiosError = error as AxiosError;
 

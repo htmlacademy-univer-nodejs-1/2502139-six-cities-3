@@ -74,6 +74,7 @@ export class ImportCommand implements Command {
       previewImage: offer.previewImage,
       images: offer.images,
       isPremium: offer.isPremium,
+      // @ts-ignore
       isFavorite: offer.isFavorite,
       rating: offer.rating,
       price: offer.price,
