@@ -6,6 +6,7 @@ import { Config, RestSchema } from '../shared/libs/config/index.js';
 import { DatabaseClient } from '../shared/libs/database-client/index.js';
 import { getMongoURI } from '../shared/helpers/index.js';
 import express, { Express } from 'express';
+import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import { Controller, ExceptionFilter } from '../shared/libs/rest/index.js';
 import { ParseTokenMiddleware } from '../shared/libs/rest/middleware/parse-token.middleware.js';
@@ -49,6 +50,7 @@ export class RestApplication {
       express.static(this.config.get('UPLOAD_DIRECTORY'))
     );
     this.server.use(authenticateMiddleware.execute.bind(authenticateMiddleware));
+    this.server.use(cors());
   }
 
   private async _initControllers() {
