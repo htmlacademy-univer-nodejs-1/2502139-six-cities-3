@@ -7,6 +7,7 @@ import { CommentEntity } from './comment.entity.js';
 import { OfferService } from '../offer/index.js';
 import { CreateCommentDto } from './dto/create-comment.dto.js';
 import { UpdateCommentDto } from './dto/update-comment.dto.js';
+import { DEFAULT_OFFER_COMMENTS_COUNT } from './comment.constant.js';
 
 @injectable()
 export class DefaultCommentService implements CommentService {
@@ -55,6 +56,7 @@ export class DefaultCommentService implements CommentService {
   ): Promise<types.DocumentType<CommentEntity>[] | null> {
     return this.commentModel
       .find({ offer: offerId })
+      .limit(DEFAULT_OFFER_COMMENTS_COUNT)
       .populate(['user', 'offer'])
       .exec();
   }

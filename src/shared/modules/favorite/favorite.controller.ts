@@ -75,7 +75,7 @@ export class FavoriteController extends BaseController {
     res: Response
   ): Promise<void> {
     const offerId = params['offerId'];
-    const offer = await this.favoriteService.create({
+    const offer = await this.favoriteService.delete({
       offer: offerId,
       user: tokenPayload.id
     });
