@@ -1,5 +1,5 @@
 import { IsEmail, MinLength } from 'class-validator';
-import { UserValidationMessages } from './user.messages';
+import { UserValidationMessages } from './user.messages.js';
 
 export class LoginUserDto {
   @IsEmail({}, { message: UserValidationMessages.email.url})

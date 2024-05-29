@@ -81,4 +81,7 @@ export class OfferRdo {
 
   @Expose()
   public publicationDate: Date;
+
+  @Expose()
+  public commentsCount: number;
 }

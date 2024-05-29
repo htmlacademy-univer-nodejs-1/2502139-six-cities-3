@@ -40,61 +40,61 @@ export class DefaultOfferService implements OfferService {
     limit?: number,
     userId?: string
   ): Promise<DocumentType<OfferEntity>[]> {
-    return (
-      this.offerModel
-        .aggregate([
-          {
-            $lookup: {
-              let: {
-                offerId: '$_id',
-              },
-              from: 'favorites',
-              as: 'favs',
-              pipeline: [
-                {
-                  $match: {
-                    $expr: {
-                      $eq: ['$offer', '$$offerId'],
-                    },
-                  },
-                },
-                {
-                  $match: {
-                    $expr: {
-                      $eq: ['$user', new mongoose.Types.ObjectId(userId)],
-                    },
-                  },
-                },
-              ],
+    return this.offerModel
+      .aggregate([
+        {
+          $lookup: {
+            let: {
+              offerId: '$_id',
             },
+            from: 'favorites',
+            as: 'favs',
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $eq: ['$offer', '$$offerId'],
+                  },
+                },
+              },
+              {
+                $match: {
+                  $expr: {
+                    $eq: ['$user', new mongoose.Types.ObjectId(userId)],
+                  },
+                },
+              },
+            ],
           },
-          { $lookup: {
+        },
+        {
+          $lookup: {
             from: 'users',
             as: 'host',
             localField: 'host',
             foreignField: '_id',
-          } },
-          { $unwind: { path: '$favs', preserveNullAndEmptyArrays: true } },
-          { $unwind: { path: '$host', preserveNullAndEmptyArrays: true } },
-          {
-            $set: {
-              isFavorite: {
-                $cond: {
-                  if: {
-                    $lte: ['$favs', null],
-                  },
-                  then: false,
-                  else: true,
+          },
+        },
+        { $unwind: { path: '$favs', preserveNullAndEmptyArrays: true } },
+        { $unwind: { path: '$host', preserveNullAndEmptyArrays: true } },
+        {
+          $set: {
+            isFavorite: {
+              $cond: {
+                if: {
+                  $lte: ['$favs', null],
                 },
+                then: false,
+                else: true,
               },
             },
           },
-          { $project: { favs: 0 }},
-          { $limit: limit || DEFAULT_OFFER_COUNT}
-        ])
-        .sort({ publicationDate: SortType.Down })
-        .exec()
-    );
+        },
+        { $project: { favs: 0 } },
+        { $limit: limit || DEFAULT_OFFER_COUNT },
+      ])
+      .sort({ publicationDate: SortType.Down })
+      .exec();
   }
 
   public async deleteById(

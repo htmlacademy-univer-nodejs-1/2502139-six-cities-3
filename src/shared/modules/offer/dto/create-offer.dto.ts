@@ -7,6 +7,7 @@ import {
   IsLatitude,
   IsLongitude,
   IsNumber,
+  IsOptional,
   IsUrl,
   Max,
   MaxLength,
@@ -33,6 +34,7 @@ export class CreateOfferDto {
     {},
     { message: OfferValidationMessage.postDate.invalidFormat }
   )
+  @IsOptional()
   public publicationDate: Date;
 
   @IsEnum(City, { message: OfferValidationMessage.city.invalid })
