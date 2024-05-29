@@ -7,7 +7,7 @@ import { getFullServerPath } from '../../../helpers/index.js';
 import { Config, RestSchema } from '../../config/index.js';
 
 function isObject(value: unknown): value is Record<string, object> {
-  return typeof value === 'object' && value !== null;
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
 @injectable()
@@ -41,14 +41,23 @@ export class PathTransformer {
             continue;
           }
 
-          if (this.isStaticProperty(key) && typeof value === 'string') {
+          if (this.isStaticProperty(key)) {
             const staticPath = STATIC_FILES_ROUTE;
             const uploadPath = STATIC_UPLOAD_ROUTE;
             const serverHost = this.config.get('HOST');
             const serverPort = this.config.get('PORT');
+            if (typeof value === 'string' && this.hasDefaultImage(value)) {
+              const rootPath = this.hasDefaultImage(value) ? staticPath : uploadPath;
+              current[key] = `${getFullServerPath(serverHost, serverPort)}${rootPath}/${value}`;
+            }
+            if (Array.isArray(value)) {
+              for (let i = 0; i < value.length; i++) {
+                const arrValue = value[i];
 
-            const rootPath = this.hasDefaultImage(value) ? staticPath : uploadPath;
-            current[key] = `${getFullServerPath(serverHost, serverPort)}${rootPath}/${value}`;
+                const rootPath = this.hasDefaultImage(arrValue) ? staticPath : uploadPath;
+                value[i] = `${getFullServerPath(serverHost, serverPort)}${rootPath}/${arrValue}`;
+              }
+            }
           }
         }
       }

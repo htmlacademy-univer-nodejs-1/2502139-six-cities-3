@@ -188,7 +188,8 @@ export class OfferController extends BaseController {
     this.ok(_res, response);
   }
 
-  public async indexPremium(_req: Request, res: Response): Promise<void> {
+  public async indexPremium({params}: Request, res: Response): Promise<void> {
+    const city = params.city;
     const offers = await this.offerService.findPremium();
     const response = fillDTO(OfferRdo, offers);
 

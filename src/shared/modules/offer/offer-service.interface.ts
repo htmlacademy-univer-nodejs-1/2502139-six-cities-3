@@ -14,5 +14,5 @@ export interface OfferService extends DocumentExists {
   decCommentCount(offerId: string): Promise<DocumentType<OfferEntity> | null>;
   updateRating(offerId: string): Promise<DocumentType<OfferEntity> | null>;
   findFavorite(): Promise<DocumentType<OfferEntity>[]>;
-  findPremium(limit?: number): Promise<DocumentType<OfferEntity>[]>;
+  findPremium(city?: string, limit?: number): Promise<DocumentType<OfferEntity>[]>;
 }

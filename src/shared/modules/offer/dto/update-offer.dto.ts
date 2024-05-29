@@ -72,14 +72,14 @@ export class UpdateOfferDto {
   @IsOptional()
   public isFavorite?: boolean;
 
-  @IsNumber(
-    { allowInfinity: false, allowNaN: false, maxDecimalPlaces: 1 },
-    { message: OfferValidationMessage.rating.invalid }
-  )
-  @Min(1, { message: OfferValidationMessage.rating.invalidDecimal })
-  @Max(5, { message: OfferValidationMessage.rating.invalidDecimal })
-  @IsOptional()
-  public rating?: number;
+  // @IsNumber(
+  //   { allowInfinity: false, allowNaN: false, maxDecimalPlaces: 1 },
+  //   { message: OfferValidationMessage.rating.invalid }
+  // )
+  // @Min(1, { message: OfferValidationMessage.rating.invalidDecimal })
+  // @Max(5, { message: OfferValidationMessage.rating.invalidDecimal })
+  // @IsOptional()
+  // public rating?: number;
 
   @IsNumber(
     { allowInfinity: false, allowNaN: false, maxDecimalPlaces: 1 },

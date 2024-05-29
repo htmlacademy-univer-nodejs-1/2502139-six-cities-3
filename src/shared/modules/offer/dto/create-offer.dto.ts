@@ -56,21 +56,22 @@ export class CreateOfferDto {
       message: OfferValidationMessage.images.someImageInvalid,
     }
   )
+  @IsOptional()
   public images: string[];
 
   @IsBoolean({ message: OfferValidationMessage.isPremium.invalid })
   public isPremium: boolean;
 
-  @IsBoolean({ message: OfferValidationMessage.isFavorite.invalid })
-  public isFavorite: boolean;
+  // @IsBoolean({ message: OfferValidationMessage.isFavorite.invalid })
+  // public isFavorite: boolean;
 
-  @IsNumber(
-    { allowInfinity: false, allowNaN: false, maxDecimalPlaces: 1 },
-    { message: OfferValidationMessage.rating.invalid }
-  )
-  @Min(1, { message: OfferValidationMessage.rating.invalidDecimal })
-  @Max(5, { message: OfferValidationMessage.rating.invalidDecimal })
-  public rating: number;
+  // @IsNumber(
+  //   { allowInfinity: false, allowNaN: false, maxDecimalPlaces: 1 },
+  //   { message: OfferValidationMessage.rating.invalid }
+  // )
+  // @Min(1, { message: OfferValidationMessage.rating.invalidDecimal })
+  // @Max(5, { message: OfferValidationMessage.rating.invalidDecimal })
+  // public rating: number;
 
   @IsNumber(
     { allowInfinity: false, allowNaN: false, maxDecimalPlaces: 1 },

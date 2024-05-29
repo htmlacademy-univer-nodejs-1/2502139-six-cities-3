@@ -11,6 +11,5 @@ coverage
 *.log
 *.env
 *.tsv
-frontend
 
 /upload/
