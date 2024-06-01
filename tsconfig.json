@@ -40,5 +40,5 @@
   "ts-node": {
     "esm": true
   },
-  "files": ["./src/shared/types/express.d.ts"]
+  "files": ["./src/shared/types/express.d.ts"],
 }

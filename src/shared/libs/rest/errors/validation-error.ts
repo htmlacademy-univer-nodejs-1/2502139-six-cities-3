@@ -1,18 +1,12 @@
 import { StatusCodes } from 'http-status-codes';
-import { ValidationError as VError } from 'class-validator';
-import { ClassConstructor } from 'class-transformer';
+import { HttpError } from './http-error.js';
+import { ValidationErrorField } from '../types/validation-error-field.type.js';
 
-export class ValidationError extends Error {
-  public httpStatusCode: number;
-  public dtoName: string;
-  public details?: VError[] = [];
+export class ValidationError extends HttpError {
+  public details: ValidationErrorField[] = [];
 
-  constructor(dto: ClassConstructor<object>, message: string, details?: VError[]) {
-    super(message);
-
-    this.httpStatusCode = StatusCodes.BAD_REQUEST;
-    this.dtoName = dto.name;
-    this.message = message;
-    this.details = details;
+  constructor(message: string, errors: ValidationErrorField[]) {
+    super(StatusCodes.BAD_REQUEST, message);
+    this.details = errors;
   }
 }

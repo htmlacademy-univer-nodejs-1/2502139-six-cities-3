@@ -66,16 +66,7 @@
       "Michael Wilson",
       "Olivia Miller"
     ],
-    "avatars": [
-      "avatar-1.jpg",
-      "avatar-2.jpg",
-      "avatar-3.jpg",
-      "avatar-4.jpg",
-      "avatar-5.jpg",
-      "avatar-6.jpg",
-      "avatar-7.jpg",
-      "avatar-8.jpg"
-    ],
+    "avatars": ["default-avatar.png"],
     "emails": [
       "mail1@hotmail.com",
       "mail2@hotmail.com",

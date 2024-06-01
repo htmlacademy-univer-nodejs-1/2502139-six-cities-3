@@ -178,18 +178,25 @@ export class OfferController extends BaseController {
     { params, body, tokenPayload }: CreateOfferCommentRequest,
     _res: Response
   ): Promise<void> {
-    const comments = await this.commentService.create({
+    await this.commentService.create({
       ...body,
       user: tokenPayload.id,
       offer: <string>params['offerId'],
     });
+    const comments = await this.commentService.findByOfferId(<string>params['offerId']);
     const response = fillDTO(CommentRdo, comments);
 
     this.ok(_res, response);
   }
 
-  public async indexPremium(_req: Request, res: Response): Promise<void> {
-    const offers = await this.offerService.findPremium();
+  public async indexPremium({params}: Request, res: Response): Promise<void> {
+    const city = params.city;
+    const limit = Number(params.city) || undefined;
+    const offers = await this.offerService.findPremium(city, limit);
+
+    console.log(offers);
+
+
     const response = fillDTO(OfferRdo, offers);
 
     this.ok(res, response);
